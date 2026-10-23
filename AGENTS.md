@@ -2,7 +2,7 @@
 
 ## Alcance y comunicación
 
-- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. La preparación documental terminó; la entrega 1 fue autorizada e implementa productos e inventario base. No iniciar módulos posteriores sin indicación.
+- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. Están implementados productos e inventario base y, por indicación expresa del usuario, ventas básicas e historial antes de usuarios y caja. No iniciar módulos posteriores sin indicación.
 - Escribir documentación, interfaz, validaciones, explicaciones y descripciones de commits en español. Usar nombres de código consistentes y sin tildes.
 - No marcar como implementadas o probadas funciones que solo estén planificadas. Actualizar README y `docs/estado.md` al finalizar cada etapa; informar cambios, verificaciones realmente ejecutadas, pendientes y commits.
 
@@ -14,6 +14,8 @@
 - Seguir los módulos y reglas de `docs/requisitos.md` y la guía de `docs/diseno.md`.
 - Usar `npm.cmd` en PowerShell. Aplicar migraciones con Umzug; no usar sincronizaciones destructivas. Limitar bases a `papeleria_promax` y `papeleria_promax_prueba`; mantener datos sintéticos y demostración únicamente en la segunda.
 - Conservar el stock fuera de los formularios de edición; crear producto y movimiento inicial atómicamente. Importes decimales exactos y cantidades enteras según el README.
+- Ventas básicas: Consumidor final, un pago en efectivo o transferencia manual, sin descuentos, crédito, pagos combinados, anulaciones ni devoluciones. Caja y autenticación siguen pendientes; conservar el responsable local configurado.
+- Calcular dinero con centavos `BigInt` y cadenas decimales; bloquear productos por ID ascendente dentro de la transacción. Conservar la clave de operación al reintentar y rechazar su reutilización con datos diferentes. No generar otra clave automáticamente ante un error de confirmación.
 
 ## Integridad de datos
 

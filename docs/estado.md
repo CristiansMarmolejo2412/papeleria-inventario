@@ -8,7 +8,7 @@ Fecha de referencia de la entrega: 23 de octubre de 2026 (`America/Bogota`). Pre
 - Entrega 1 implementada en `feat/productos-inventario-base`, creada desde la rama de documentación, con árbol inicialmente limpio. `main` no se modifica ni se fusiona automáticamente.
 - Aplicación Express/Pug ejecutable, Tailwind compilado y recursos locales. Menú plegable, tarjetas, mensajes, navegación y adaptación visual basada en la referencia del usuario.
 - Categorías con alta, consulta, edición y desactivación. Productos con códigos únicos, categoría, marca, ubicación, costos, precios, mínimos, estado y existencias iniciales.
-- Consulta de productos con búsqueda por nombre y códigos, filtros por categoría, disponibilidad y actividad, y páginas de 10 registros. Inicio con indicadores reales del inventario; ventas y caja pendientes sin cifras ficticias.
+- Consulta de productos con búsqueda por nombre y códigos, filtros por categoría, disponibilidad y actividad, y páginas de 10 registros. Inicio con indicadores reales del inventario y ventas del día; caja pendiente sin cifras ficticias.
 - Creación atómica de producto y movimiento inicial con fecha, motivo y responsable local. Edición sin modificación directa de stock, importes exactos y validación junto a los campos.
 - Configuración por `.env` excluido de Git; ejemplo sin secretos. Bases limitadas a `papeleria_promax` y `papeleria_promax_prueba`, migraciones con Umzug y sin sincronización destructiva.
 
@@ -37,9 +37,30 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 - Revisión adicional con datos visuales temporales, sin modificar la base de trabajo: variantes sin alertas, pocas existencias, agotados e inventario vacío; capturas de escritorio y móvil, colores calculados y mensajes singulares comprobados. Ocho combinaciones principales de texto y fondo superan contraste 4,5:1. Capturas excluidas de Git en `test-results/`.
 - No se modificaron migraciones, dependencias ni reglas de persistencia. No se inició otro módulo. El commit y su publicación se informan al cerrar este ajuste.
 
+## Ventas básicas e historial — 23 de octubre de 2026
+
+- Rama `feat/ventas`, creada desde `feat/productos-inventario-base` con el ajuste visual `d160b6c` y árbol inicialmente limpio. Se conserva la paleta cálida y `main` no se modifica.
+- Implementados búsqueda de productos activos por nombre/códigos, catálogo paginado, carrito con cantidades acumuladas, edición/eliminación de líneas, subtotal y total exactos. Borrador por pestaña y conservación del carrito ante errores de validación o registro.
+- Consumidor final, pago único en efectivo con recibido/cambio o transferencia manual con referencia opcional. Comprobante interno consultable, número único `V-<id>`, fecha, responsable, detalle histórico y pago; estilos locales de impresión. Historial paginado por fecha de Bogotá y número exacto.
+- Inicio con total y número reales de ventas del día. Caja permanece pendiente: no se abren ni cierran cajas al vender.
+- Migración aditiva `002-ventas.js`: tablas de ventas, detalles y pagos, índice por fecha y `ventaId` opcional en movimientos. Aplicada primero en prueba y después en la base local. Repetición sin migraciones pendientes y con los productos de uso intactos; no se cargaron ventas de prueba en la base de trabajo.
+- Cálculos en centavos `BigInt` y decimales exactos; precios/costos obtenidos del servidor. Se conserva nombre, código, precio y costo históricos. Una transacción incluye venta, detalle, pago, salidas y descuento de existencias.
+- Clave de operación UUID con restricción única y huella del contenido normalizado; reintentos equivalentes devuelven el comprobante original y una clave confirmada con otros datos se rechaza. Bloqueos por producto en orden ascendente e aislamiento `READ COMMITTED` impiden vender dos veces la última unidad.
+
+### Verificaciones de esta entrega
+
+- `npm.cmd run css`: compilación correcta. `npm.cmd test`: cuatro pruebas aprobadas, incluidas todas las plantillas actuales.
+- `npm.cmd run test:ventas`: siete pruebas aprobadas contra MySQL de prueba. Incluyen efectivo, transferencia, agrupación, precios manipulados ignorados, valores históricos, persistencia desde otro proceso, comprobante/historial, límites de día reales y paginación; rechazos de pagos insuficientes, inactivos, stock insuficiente, ventas vacías y cantidades inválidas.
+- Doble envío concurrente con la misma clave: una sola venta y un solo descuento. Dos operaciones distintas sobre la última unidad: solo una confirmada y stock final cero. Reintento posterior devuelve el mismo comprobante; clave reutilizada con cambios se rechaza.
+- Fallo controlado al guardar el pago después de descontar existencias: reversión completa de venta, detalles, pago, movimientos y stock. También se verificó respuesta HTTP recuperable con conservación del carrito y reintento de la misma operación.
+- `npm.cmd run test:integracion` y `npm.cmd run test:navegador`: regresiones de productos aprobadas, incluida persistencia tras reiniciar el servidor y la interfaz a 1366, 768 y 360 píxeles.
+- `npm.cmd run test:ventas:navegador`: Chrome aprobado en 1366 y 360 píxeles, sin desbordamiento de página ni recursos externos. Creación, acumulación, cambio de cantidades, eliminación, recarga del borrador, pago insuficiente con carrito conservado, efectivo con cambio, transferencia, confirmación, recarga del comprobante sin nuevo descuento, historial y caja pendiente.
+- Capturas de nueva venta, comprobante e historial revisadas en escritorio y móvil. PDF local generado con medio de impresión y navegación oculta; no se verificó una impresora física. Archivos en `test-results/`, excluidos de Git.
+- Todas las verificaciones de venta usan `papeleria_promax_prueba` y eliminan únicamente sus registros sintéticos. No se instalaron dependencias nuevas ni se modificó `.env`.
+
 ## Límites y pendientes
 
-- Entregas 2 a 13 pendientes: autenticación, permisos, movimientos operativos, caja, ventas, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones.
+- Pendientes: autenticación, permisos, movimientos operativos completos, caja, descuentos, crédito, pagos combinados, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones. Ventas básicas, consulta del historial e indicadores diarios están implementados; el plan distingue el alcance completo de cada módulo.
 - El responsable local es un nombre de configuración; no existe aún autenticación ni una identidad de usuario verificable. El servidor escucha en `127.0.0.1` por defecto.
 - Se verificó ausencia de dependencias externas durante las solicitudes, sin desconectar físicamente Windows de internet. No se realizó auditoría integral con lector de pantalla ni medición automatizada de todos los contrastes. Otras versiones de Node y otros navegadores permanecen sin verificar.
 - Node 26 emite una advertencia de obsolescencia durante la compilación de Tailwind; el comando termina correctamente. La herramienta de paquetes también informa un script nativo opcional de vigilancia sin aprobar; la compilación y el recorrido verificados funcionan con el binario disponible. No se modificó la política de scripts del sistema.
@@ -48,4 +69,6 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 
 Commits de implementación: `1b3973a` (`feat: preparar conexión local y migraciones de inventario`) y `0251676` (`feat: gestionar productos e inventario con diseño local y pruebas`). El commit documental y el resultado de publicar la rama se informan al cerrar la entrega; pueden consultarse con `git log --oneline`.
 
-Cerrar esta entrega y detenerse. La siguiente propuesta es la entrega 2 (usuarios y permisos), sujeta a nueva indicación. La instalación, configuración, migraciones, pruebas, demostración y pasos para abrir la aplicación están en el README.
+Ventas: commits `5683384` (`feat: registrar ventas atómicas con pagos y control de concurrencia`) y `5713296` (`feat: agregar carrito, historial y comprobantes internos de ventas`). El commit documental y el resultado de publicar `feat/ventas` se informan al cerrar la entrega. El ajuste visual de productos está publicado en `d160b6c`.
+
+Cerrar la entrega de ventas y detenerse. La siguiente propuesta es usuarios y permisos, sujeta a nueva indicación. La instalación, configuración, migraciones, pruebas, demostración y pasos para registrar una venta están en el README.

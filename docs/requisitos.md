@@ -42,4 +42,14 @@ Idioma de documentación, interfaz y validaciones: español. Nombres de código 
 
 En la entrega 1 se decidió usar MySQL 8.0.16 o posterior, códigos únicos incluso en inactivos, cantidades enteras e importes `DECIMAL(12,2)` recibidos como cadenas con máximo dos decimales, sin redondeo implícito. Los códigos internos se normalizan a mayúsculas y los códigos de barras vacíos se almacenan como `NULL`. Las fechas se almacenan en UTC y se muestran en Bogotá. El stock solo se establece durante el alta, junto con el movimiento inicial, y no se edita directamente.
 
-Antes de las entregas correspondientes se concretarán: redondeo de descuentos y ventas, métodos de pago, permisos por operación, tratamiento de devoluciones, equivalencias y política de respaldo. La identidad del responsable inicial es un nombre configurado localmente; la autenticación y sus permisos pertenecen a la entrega 2.
+Antes de las ampliaciones correspondientes se concretarán: redondeo de descuentos, pagos combinados y crédito, permisos por operación, tratamiento de devoluciones, equivalencias y política de respaldo. La identidad del responsable es un nombre configurado localmente; la autenticación y sus permisos pertenecen a la entrega 2.
+
+## Alcance implementado de ventas básicas
+
+Por indicación expresa del usuario, se adelanta el registro e historial antes de caja y autenticación. Se usa Consumidor final y un único pago: efectivo con recibido/cambio, o transferencia manual con referencia opcional. No se verifican movimientos bancarios.
+
+El servidor agrupa productos repetidos y usa exclusivamente sus datos vigentes para calcular el total. Conserva nombre, código, precio y costo históricos; cantidades enteras positivas; cálculos en centavos `BigInt` y almacenamiento `DECIMAL(18,2)` para importes de venta y pago. Bloquea productos por ID ascendente en una transacción `READ COMMITTED`. El UUID de operación único y su huella de contenido permiten reintentos equivalentes y rechazan claves reutilizadas con datos diferentes.
+
+La venta, detalles, pago, salidas y stock se guardan juntos. El comprobante `V-<id>` es interno, único y puede tener saltos de numeración. El historial ofrece fecha de Bogotá, número exacto y páginas de 10 ventas; inicio muestra número y total del día con límites locales convertidos a UTC.
+
+Continúan pendientes descuentos, crédito, pagos combinados, clientes, anulaciones, devoluciones, caja y autenticación. El responsable sigue siendo el nombre local configurado. La política de redondeo de futuros descuentos y las reglas de caja se definirán al autorizar esas ampliaciones.

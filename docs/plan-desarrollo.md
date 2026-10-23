@@ -1,6 +1,6 @@
 # Plan de desarrollo
 
-Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Preparación terminada y entrega 1 implementada; entregas 2 a 13 pendientes. Ver resultados y límites en `estado.md`.
+Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Preparación, entrega 1 y ventas básicas con historial (5A) implementadas. Por solicitud expresa del usuario, 5A se adelantó antes de usuarios, movimientos operativos completos y caja, que siguen pendientes. Ver resultados y límites en `estado.md`.
 
 ## Entrega 0: preparación documental
 
@@ -31,7 +31,7 @@ Criterios verificables:
 
 Rama sugerida: `feat/usuarios-permisos`.
 
-Criterios: crear acceso local con roles administrador y vendedor; documentar matriz de permisos; rechazar operaciones no autorizadas en el servidor; comprobar inicio y cierre de sesión, protección de credenciales y desactivación sin borrar historial. Vincular responsables a operaciones antes de habilitar movimientos y ventas.
+Criterios: crear acceso local con roles administrador y vendedor; documentar matriz de permisos; rechazar operaciones no autorizadas en el servidor; comprobar inicio y cierre de sesión, protección de credenciales y desactivación sin borrar historial. Vincular responsables autenticados a futuras operaciones conservando el responsable local histórico de las ventas básicas ya registradas. Esta entrega permanece pendiente.
 
 ## Entrega 3: movimientos de inventario
 
@@ -47,15 +47,23 @@ Criterios: abrir y cerrar caja; registrar entradas y gastos; calcular efectivo e
 
 ## Entrega 5: ventas y comprobante interno
 
-Rama sugerida: `feat/ventas`.
+### 5A: ventas básicas e historial
 
-Criterios: vender varios productos, aplicar descuentos válidos, cliente opcional, pagos combinados y cambio; imprimir comprobante interno. Verificar representación monetaria exacta y redondeo, precios y costos históricos, y transacción única de venta, pagos, movimientos y existencias. Probar reversión ante error, insuficiencia de existencias, concurrencia, doble clic y reintento con la misma clave sin duplicar venta. Integrar el efecto de pagos en caja según la política documentada.
+Rama: `feat/ventas`, creada desde `feat/productos-inventario-base` e incluyendo `d160b6c`.
+
+Estado: implementada por autorización expresa del usuario. Pantalla de nueva venta con búsqueda y carrito, acumulación de productos repetidos, efectivo con cambio o transferencia manual, Consumidor final, comprobante interno, historial paginado con fecha y número e indicadores reales de ventas del día en Bogotá. Caja permanece pendiente y se conserva el responsable local sin autenticación.
+
+Criterios verificados: precios y stock recalculados en servidor, importes exactos, valores históricos, transacción única de venta/detalles/pago/movimientos/stock, rechazo de entradas inválidas, insuficiencia de pago o existencias, inactivos y carritos vacíos; idempotencia persistente ante reintento y doble envío; dos ventas concurrentes por la última unidad; reversión completa al fallar el pago; persistencia desde otro proceso, comprobante, historial y límites de día en Bogotá. Se probó el recorrido en Chrome a 1366 y 360 píxeles y se generó un PDF de impresión. Resultados y limitaciones en `estado.md`.
+
+### 5B: ampliaciones pendientes
+
+Pendientes de nueva autorización: descuentos, crédito, pagos combinados, cliente asociado e integración con apertura/cierre de caja. Definir reglas de redondeo, pagos y permisos antes de implementarlos y mantener las garantías transaccionales e históricas de 5A.
 
 ## Entrega 6: historial, anulaciones y devoluciones
 
 Rama sugerida: `feat/historial-devoluciones`.
 
-Criterios: consultar ventas y detalles; anular y devolver con motivo, responsable y fecha, sin borrar historial; verificar reversión o compensación coherente de inventario, pagos y caja, y rechazo de devoluciones excesivas o repetidas.
+La consulta de ventas y detalles ya está disponible en 5A. Permanecen pendientes las anulaciones y devoluciones con motivo, responsable y fecha, sin borrar historial; verificar reversión o compensación coherente de inventario, pagos y caja, y rechazo de devoluciones excesivas o repetidas antes de declararlas completas.
 
 ## Entrega 7: clientes
 
@@ -85,7 +93,7 @@ Criterios: configurar impresiones, fotocopias y anillados; vender servicios y pr
 
 Rama sugerida: `feat/inicio-reportes`.
 
-Criterios: mostrar ventas del día, productos disponibles, pocas existencias, caja y accesos rápidos; generar reportes de ventas, inventario, productos más vendidos y ganancias estimadas. Contrastar resultados con datos de prueba, costos históricos, anulaciones y devoluciones; verificar límites de día en `America/Bogota` y documentar la fórmula de ganancia estimada.
+Los indicadores de inventario y ventas del día y los accesos básicos ya están implementados. Pendientes: estado real de caja, reportes de ventas, inventario, productos más vendidos y ganancias estimadas. Contrastar resultados con datos de prueba, costos históricos, anulaciones y devoluciones; verificar límites de día en `America/Bogota` y documentar la fórmula de ganancia estimada.
 
 ## Entrega 12: configuración y respaldos
 

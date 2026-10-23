@@ -6,7 +6,7 @@ Sistema previsto para administrar productos, inventario, ventas y caja de una pa
 
 Primera entrega funcional: aplicación local ejecutable, diseño adaptable, categorías y productos persistentes en MySQL. Permite crear, consultar, editar y desactivar productos; buscar por nombre o código, filtrar y paginar. El alta registra el producto y su movimiento inicial en una transacción. La edición no permite cambiar existencias.
 
-Inicio muestra indicadores reales de inventario. Ventas, caja y las demás secciones futuras muestran «Pendiente de implementación», sin importes simulados ni formularios operativos. Usuarios y permisos todavía no están implementados; el responsable de las existencias iniciales es el operador local configurado.
+Ventas básicas e historial implementados: carrito de varios productos, efectivo con cambio o transferencia manual, comprobante interno imprimible y consulta por fecha o número. Inicio muestra indicadores reales de inventario y el total y número de ventas del día en Bogotá. Caja y las demás secciones futuras continúan pendientes. Usuarios y permisos todavía no están implementados; se conserva el responsable local configurado.
 
 La interfaz usa fondo crema, menú beige madera claro y detalles café y amarillo suave, con acciones principales turquesa y superficies claras para tablas y formularios. El resumen de existencias distingue ausencia de alertas (verde con confirmación), pocas existencias (amarillo) y agotados (rojo suave), con contadores en singular o plural según corresponda.
 
@@ -24,7 +24,7 @@ La operación cotidiana debe funcionar sin internet: scripts, estilos, fuentes e
 - [Plan por entregas y criterios de finalización](docs/plan-desarrollo.md).
 - [Estado, verificaciones y siguiente tarea](docs/estado.md).
 
-Los comprobantes futuros serán internos; la facturación electrónica está fuera de la primera versión.
+Los comprobantes son internos; la facturación electrónica está fuera de la primera versión.
 
 ## Instalación en Windows
 
@@ -86,15 +86,41 @@ Las migraciones se registran en `SequelizeMeta`; repetir `db:migrar` no recrea l
 - El stock inicial, incluso cero, genera un movimiento con fecha, motivo y responsable en la misma transacción. La edición rechaza el campo `stock`, incluso si se envía manualmente.
 - Fechas almacenadas en UTC y mostradas en `America/Bogota`. No se eliminan productos ni categorías desde la aplicación; se desactivan. Se permite conservar una categoría inactiva al editar un producto ya asociado, pero no asignarla a productos nuevos.
 
+## Registro e historial de ventas
+
+Para actualizar una instalación existente, conserva `.env`, detén el servidor, ejecuta `npm.cmd run db:migrar` y vuelve a arrancar con `npm.cmd start`. La migración `002-ventas.js` añade ventas, detalles históricos, pagos, un índice por fecha y una referencia opcional de venta en los movimientos existentes; no borra ni modifica productos o existencias. No hay dependencias nuevas para esta entrega.
+
+1. Abre **http://127.0.0.1:3000/ventas/nueva** o selecciona **Nueva venta**.
+2. Busca por nombre, código interno o código de barras. Solo aparecen productos activos, con precio y existencias; los agotados no se pueden agregar desde la interfaz.
+3. Agrega productos, cambia cantidades o quita líneas. Volver a agregar el mismo producto acumula su cantidad. Subtotal y total son iguales porque todavía no existen descuentos.
+4. La venta se registra a **Consumidor final**. Elige **Efectivo** e introduce el importe recibido, o **Transferencia** con referencia opcional. La transferencia es un registro manual, sin verificación bancaria.
+5. Pulsa **Confirmar venta**. Ante errores, conserva el carrito y corrige los campos. Si hubo una interrupción sin confirmación, reintenta la misma operación; no abras otro carrito para repetirla.
+6. Consulta e imprime el comprobante interno. **Historial de ventas** permite filtrar por fecha local de Bogotá y buscar el número exacto, como `V-00000001` (también acepta su parte numérica), con páginas de 10 ventas.
+
+El borrador se conserva en `sessionStorage` de la pestaña para soportar recargas y se limpia al abrir su comprobante confirmado. No sustituye los registros persistentes de MySQL ni garantiza recuperación si se borra el almacenamiento del navegador. Node y MySQL deben estar en ejecución para registrar operaciones.
+
+### Integridad y límites de las ventas
+
+- El servidor obtiene precios, costos, nombres, códigos y stock desde MySQL, sin confiar en importes enviados por el navegador. El detalle conserva sus valores históricos aunque cambie el catálogo.
+- Los cálculos usan centavos `BigInt`, sin coma flotante. Precio y costo conservan `DECIMAL(12,2)`; subtotal, total y pago usan `DECIMAL(18,2)`, hasta 9999999999999999.99 COP por operación. No se redondea: se rechazan importes con más de dos decimales. El total debe ser positivo.
+- Hasta 100 líneas de entrada por operación, agrupadas por producto, con cantidades enteras positivas. El stock se verifica de nuevo al confirmar.
+- Venta, detalles, pago, movimientos de salida y descuento de existencias se confirman o revierten juntos. Se bloquean los productos en orden de ID con `SELECT ... FOR UPDATE` e aislamiento `READ COMMITTED`; dos ventas no pueden consumir la misma última unidad.
+- Una clave UUID de operación tiene restricción única persistente. El mismo contenido normalizado devuelve el comprobante existente; cambiar cantidades o pago con una clave ya confirmada se rechaza. Tras una reversión completa se puede reintentar esa clave. La confirmación redirige con HTTP 303 a una consulta GET: recargar el comprobante no registra ventas.
+- El número interno `V-` seguido del ID con al menos ocho cifras es único. Puede haber saltos por intentos revertidos; no es numeración fiscal.
+- Se almacenan fechas UTC y se consultan los días de `America/Bogota` desde las 00:00 inclusive hasta las 00:00 del día siguiente, exclusivas. Los indicadores suman importes decimales directamente en MySQL sin convertirlos a coma flotante.
+- Registrar una venta **no abre ni cierra caja**. El responsable sigue siendo `RESPONSABLE_LOCAL`, sin identidad autenticada. No se implementaron clientes, descuentos, crédito, pagos combinados, anulaciones o devoluciones; quedan para entregas posteriores.
+
 ## Verificaciones y demostración opcional
 
 ```powershell
 npm.cmd test
 npm.cmd run test:integracion
 npm.cmd run test:navegador
+npm.cmd run test:ventas
+npm.cmd run test:ventas:navegador
 ```
 
-Las pruebas de integración y navegador usan exclusivamente `papeleria_promax_prueba`, con las credenciales de `.env`. Aplica sus migraciones antes de la primera prueba de navegador:
+Las pruebas de integración, ventas y navegador usan exclusivamente `papeleria_promax_prueba`, con las credenciales de `.env`. Ejecuta los comandos de prueba secuencialmente. Las nuevas pruebas de ventas aplican sus migraciones automáticamente; para la prueba original de navegador, prepara primero el esquema:
 
 ```powershell
 $env:DB_NAME = 'papeleria_promax_prueba'
@@ -103,7 +129,7 @@ npm.cmd run db:migrar
 Remove-Item Env:DB_NAME
 ```
 
-Integración aplica las migraciones de prueba automáticamente. Ambas pruebas crean registros sintéticos identificables y eliminan solo los que crearon; no vacían bases o tablas. La prueba de navegador requiere Google Chrome instalado; usa Playwright, un puerto local temporal y guarda capturas excluidas de Git en `test-results/`.
+Integración aplica las migraciones de prueba automáticamente. Las pruebas crean registros sintéticos identificables y eliminan solo los que crearon; no vacían bases o tablas. Las pruebas de navegador requieren Google Chrome instalado; usan Playwright y un puerto local temporal, y guardan capturas excluidas de Git en `test-results/`. El recorrido de ventas también genera un PDF de comprobante; no se comprobó una impresora física.
 
 Para cargar ejemplos opcionales **solo en la base de prueba**:
 

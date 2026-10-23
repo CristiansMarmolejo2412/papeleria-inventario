@@ -1,6 +1,6 @@
 # Guía de diseño e interacción
 
-Estado: diseño base implementado para inicio, inventario, productos, categorías y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Ventas y caja muestran su estado pendiente; no se copiaron cifras simuladas de la referencia.
+Estado: diseño base implementado para inicio, inventario, productos, categorías, ventas, historial, comprobante y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Inicio muestra ventas reales del día y caja permanece pendiente; no se copiaron cifras simuladas de la referencia.
 
 ## Dirección visual
 
@@ -17,6 +17,7 @@ Tarjetas con bordes redondeados, sombras discretas y espacio generoso. Tipograf�
 - Menú lateral plegable, con iconos y secciones agrupadas: operación (inicio, ventas, caja), inventario (productos, consulta, movimientos, compras y proveedores), relaciones (clientes), análisis (reportes e historial) y administración (usuarios y configuración).
 - Tablas con encabezados claros, importes alineados y etiquetas como «Disponible», «Pocas existencias», «Agotado» e «Inactivo»; no depender solo del color.
 - Ventas: buscador y productos a la izquierda; detalle, pagos y total a la derecha. En pantallas pequeñas, apilar secciones manteniendo accesibles el total y la acción principal.
+- Nueva venta conserva el carrito ante errores y recargas de la pestaña. Los pagos muestran campos según el medio seleccionado; transferencia informa expresamente que el registro es manual. La confirmación abre un comprobante consultable e imprimible, con estilos locales que ocultan navegación y botones al imprimir.
 - Adaptar menú, formularios y tablas a distintos tamaños; permitir desplazamiento controlado de tablas sin ocultar acciones esenciales.
 
 ## Interacción y accesibilidad
@@ -36,3 +37,5 @@ Se ejecutó una prueba con Chrome a 360, 768 y 1366 píxeles: capturas, ausencia
 La prueba bloquea recursos ajenos al servidor local y verifica que no se soliciten. Esto comprueba la independencia de recursos externos; no equivale a desconectar físicamente Windows de internet. Se probó preferencia de movimiento reducido para capturas estables. No se realizó auditoría completa con lector de pantalla ni medición automatizada de contraste de todas las combinaciones.
 
 Para el ajuste cromático se revisaron además las variantes sin alertas, pocas existencias, agotados e inventario vacío con datos visuales temporales, a 1366 y 360 píxeles. Se comprobaron los colores calculados por el navegador y el singular de los contadores. Ocho combinaciones principales de texto y fondo superaron 4,5:1 de contraste, incluidos café sobre madera (4,52:1) y blanco sobre turquesa (4,86:1). Esta comprobación es parcial y no sustituye una auditoría completa de accesibilidad.
+
+Ventas: recorrido de Chrome a 1366 y 360 píxeles con captura de carrito, comprobante e historial; edición y eliminación de líneas, conservación al recargar y tras pago insuficiente, efectivo y transferencia. Se comprobó el medio de impresión con un PDF local, sin prueba en impresora física. Capturas y PDF permanecen en `test-results/`, excluidos de Git.
