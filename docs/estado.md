@@ -28,6 +28,15 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 - Demostración opcional ejecutada solo en `papeleria_promax_prueba`. Las pruebas eliminan únicamente sus registros sintéticos; no vacían bases ni tablas ni cargan demostración en la base de trabajo.
 - Se corrigieron las alertas de dependencias: Tailwind/CLI 4.3.0, dependencias transitivas actualizadas y `uuid` de Sequelize fijado a 11.1.1 compatible con CommonJS. La auditoría posterior informó cero vulnerabilidades. Se conserva `package-lock.json`.
 
+## Ajuste visual de la entrega 1 — 23 de octubre de 2026
+
+- Trabajo sobre `feat/productos-inventario-base`, inicialmente limpia; se conservan la distribución y las operaciones existentes.
+- Aplicados fondo crema `#F6F0E5`, lateral beige madera claro `#EADBC8`, detalles café `#795C43` y amarillo suave `#F4D478`. Recursos locales y colores planos, sin texturas ni imágenes de fondo; acciones principales turquesa y superficies claras para tablas y formularios.
+- Resumen verde con confirmación si no hay alertas, amarillo para pocas existencias y rojo suave para agotados, con prioridad para estos últimos. Inventario vacío identificado de forma explícita. Corregidos singular y plural en indicadores, resumen y paginación.
+- Ejecutados `npm.cmd run css`, `npm.cmd test` (cuatro pruebas aprobadas) y `npm.cmd run test:navegador` (recorrido aprobado con MySQL, menú, búsqueda, alta, edición y desactivación, a 1366, 768 y 360 píxeles).
+- Revisión adicional con datos visuales temporales, sin modificar la base de trabajo: variantes sin alertas, pocas existencias, agotados e inventario vacío; capturas de escritorio y móvil, colores calculados y mensajes singulares comprobados. Ocho combinaciones principales de texto y fondo superan contraste 4,5:1. Capturas excluidas de Git en `test-results/`.
+- No se modificaron migraciones, dependencias ni reglas de persistencia. No se inició otro módulo. El commit y su publicación se informan al cerrar este ajuste.
+
 ## Límites y pendientes
 
 - Entregas 2 a 13 pendientes: autenticación, permisos, movimientos operativos, caja, ventas, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones.

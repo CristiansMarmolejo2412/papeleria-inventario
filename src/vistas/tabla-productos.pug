@@ -28,7 +28,7 @@ if productos.length
             td
               a.enlace(href='/productos/'+producto.id+'/editar' aria-label='Editar '+producto.nombre) Editar
   nav.paginacion(aria-label='Paginación')
-    span #{total} productos · Página #{pagina} de #{paginas}
+    span #{total} #{total === 1 ? 'producto' : 'productos'} · Página #{pagina} de #{paginas}
     .flex.gap-2
       if pagina > 1
         a.boton.secundario(href=enlace({pagina:pagina-1})) Anterior

@@ -8,6 +8,8 @@ Primera entrega funcional: aplicación local ejecutable, diseño adaptable, cate
 
 Inicio muestra indicadores reales de inventario. Ventas, caja y las demás secciones futuras muestran «Pendiente de implementación», sin importes simulados ni formularios operativos. Usuarios y permisos todavía no están implementados; el responsable de las existencias iniciales es el operador local configurado.
 
+La interfaz usa fondo crema, menú beige madera claro y detalles café y amarillo suave, con acciones principales turquesa y superficies claras para tablas y formularios. El resumen de existencias distingue ausencia de alertas (verde con confirmación), pocas existencias (amarillo) y agotados (rojo suave), con contadores en singular o plural según corresponda.
+
 ## Tecnologías previstas
 
 Node.js, Express 5, Sequelize 6, MySQL 8, Pug 3 y Tailwind CSS 4. El código está separado en rutas, controladores, servicios, modelos y vistas. Se verificó con Node.js **26.3.1**, npm **11.16.0** y MySQL **8.0.46** en Windows. El proyecto declara Node.js 22 o posterior; otras versiones no se han verificado. Las versiones exactas instaladas se conservan en `package-lock.json`.

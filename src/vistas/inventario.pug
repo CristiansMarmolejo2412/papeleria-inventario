@@ -1,8 +1,12 @@
 extends base
 block contenido
+  - const hayAgotados = resumen.agotados > 0
+  - const hayPocas = resumen.pocas > 0
+  - const hayAlertas = hayAgotados || hayPocas
+  - const tonoResumen = hayAgotados ? 'resumen-agotado' : hayPocas ? 'resumen-precaucion' : 'resumen-correcto'
   if inicio
     .indicadores
-      each tarjeta in [{titulo:'Ventas de hoy',valor:'Pendiente',detalle:'Sin implementar',icono:'ventas',tono:'menta'},{titulo:'Productos activos',valor:resumen.activos,detalle:resumen.disponibles+' con existencias',icono:'productos',tono:'menta'},{titulo:'Pocas existencias',valor:resumen.pocas,detalle:resumen.agotados+' agotados',icono:'alerta',tono:'crema'},{titulo:'Estado de caja',valor:'Pendiente',detalle:'Sin implementar',icono:'caja',tono:'menta'}]
+      each tarjeta in [{titulo:'Ventas de hoy',valor:'Pendiente',detalle:'Sin implementar',icono:'ventas',tono:'menta'},{titulo:resumen.activos === 1 ? 'Producto activo' : 'Productos activos',valor:resumen.activos,detalle:resumen.disponibles+' '+(resumen.disponibles === 1 ? 'producto con existencias' : 'productos con existencias'),icono:'productos',tono:'menta'},{titulo:'Pocas existencias',valor:resumen.pocas,detalle:resumen.agotados+' '+(resumen.agotados === 1 ? 'producto agotado' : 'productos agotados'),icono:hayAlertas ? 'alerta' : 'confirmacion',tono:hayAgotados ? 'rojo-suave' : hayPocas ? 'crema' : 'confirmacion'},{titulo:'Estado de caja',valor:'Pendiente',detalle:'Sin implementar',icono:'caja',tono:'menta'}]
         article.tarjeta.indicador
           .circulo(class=tarjeta.tono)
             +icono(tarjeta.icono)
@@ -44,12 +48,18 @@ block contenido
       #resultados(data-resultados aria-live='polite' aria-busy='false')
         include tabla-productos
     aside.complementos
-      section.tarjeta.atencion
-        .circulo.crema
-          +icono('alerta')
-        h2 Tu inventario, al día
-        p #{resumen.pocas} productos con pocas existencias y #{resumen.agotados} agotados, entre los productos activos.
-        a.boton.amarillo(href='/inventario?disponibilidad=pocas') Revisar existencias
+      section.tarjeta.atencion(class=tonoResumen aria-label='Resumen de existencias')
+        .circulo(class=hayAgotados ? 'rojo-suave' : hayPocas ? 'crema' : 'confirmacion')
+          +icono(hayAlertas ? 'alerta' : 'confirmacion')
+        h2= hayAgotados ? (resumen.agotados === 1 ? 'Hay un producto agotado' : 'Hay productos agotados') : hayPocas ? 'Revisa tus existencias' : 'Tu inventario, al día'
+        if hayAlertas
+          if hayPocas
+            p #{resumen.pocas} #{resumen.pocas === 1 ? 'producto con pocas existencias' : 'productos con pocas existencias'}.
+          if hayAgotados
+            p #{resumen.agotados} #{resumen.agotados === 1 ? 'producto agotado' : 'productos agotados'}.
+        else
+          p= resumen.activos === 1 ? 'El producto activo tiene existencias por encima de su mínimo.' : resumen.activos > 0 ? 'Todos los productos activos tienen existencias por encima de su mínimo.' : 'Sin alertas de inventario. Todavía no hay productos activos.'
+        a.boton(class=hayAgotados ? 'peligro' : hayPocas ? 'amarillo' : 'secundario' href=hayAgotados ? '/inventario?disponibilidad=agotados' : hayPocas ? '/inventario?disponibilidad=pocas' : '/inventario')= hayAlertas ? 'Revisar existencias' : 'Consultar inventario'
       section.tarjeta.accesos
         h2 Accesos rápidos
         a.acceso(href='/productos/nuevo')

@@ -4,7 +4,11 @@ Estado: diseño base implementado para inicio, inventario, productos, categoría
 
 ## Dirección visual
 
-Interfaz moderna, minimalista, cálida y ligeramente interactiva. Fondo blanco cálido, turquesa principal y detalles coral y amarillo suave. Paleta inicial orientativa: fondo `#FFFCF7`, texto `#243735`, turquesa `#087F79`, coral `#E98573` y amarillo `#F6DE91`. Verificar contraste en las combinaciones finales; reservar tonos suaves para superficies y acompañar estados con texto.
+Interfaz moderna, minimalista, cálida y ligeramente interactiva. Paleta ajustada el 23 de octubre de 2026: fondo crema `#F6F0E5`, menú lateral beige madera claro `#EADBC8`, detalles café `#795C43` y amarillo suave `#F4D478`. El tono madera se representa exclusivamente con colores planos, sin texturas ni imágenes de fondo. El turquesa `#087F79` se conserva para acciones principales, selección y foco.
+
+Tablas, formularios y tarjetas usan superficies claras `#FFFDF9`, texto oscuro `#30291F`, encabezados beige suaves y bordes definidos. Se mantiene la distribución original, incluidos menú plegable, rejillas y desplazamiento de tablas en móvil.
+
+El resumen de existencias usa verde suave con icono de confirmación si no hay alertas, amarillo cuando solo hay pocas existencias y rojo suave si hay productos agotados (prioridad cuando coinciden ambos tipos de alerta). El texto informa cada cantidad y el enlace dirige al filtro prioritario. Sin productos activos se indica explícitamente que todavía no hay productos; no se afirma que exista inventario abastecido. Los contadores y mensajes distinguen singular y plural, por ejemplo «1 producto agotado» y «2 productos agotados».
 
 Tarjetas con bordes redondeados, sombras discretas y espacio generoso. Tipografía legible disponible localmente o del sistema. Iconos locales con etiquetas o nombres accesibles.
 
@@ -30,3 +34,5 @@ Tarjetas con bordes redondeados, sombras discretas y espacio generoso. Tipograf�
 Se ejecutó una prueba con Chrome a 360, 768 y 1366 píxeles: capturas, ausencia de desbordamiento horizontal de página, menú, teclado, búsqueda y operaciones de productos. Las tablas conservan desplazamiento horizontal con región enfocable por teclado. Se revisaron visualmente capturas de escritorio y móvil.
 
 La prueba bloquea recursos ajenos al servidor local y verifica que no se soliciten. Esto comprueba la independencia de recursos externos; no equivale a desconectar físicamente Windows de internet. Se probó preferencia de movimiento reducido para capturas estables. No se realizó auditoría completa con lector de pantalla ni medición automatizada de contraste de todas las combinaciones.
+
+Para el ajuste cromático se revisaron además las variantes sin alertas, pocas existencias, agotados e inventario vacío con datos visuales temporales, a 1366 y 360 píxeles. Se comprobaron los colores calculados por el navegador y el singular de los contadores. Ocho combinaciones principales de texto y fondo superaron 4,5:1 de contraste, incluidos café sobre madera (4,52:1) y blanco sobre turquesa (4,86:1). Esta comprobación es parcial y no sustituye una auditoría completa de accesibilidad.
