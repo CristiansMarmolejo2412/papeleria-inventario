@@ -1,0 +1,51 @@
+extends base
+block contenido
+  section.tarjeta
+    .encabezado-panel
+      div
+        h2 Ventas registradas
+        p.subtitulo Comprobantes internos · Fechas y horas de Bogotá
+      a.boton.primario(href='/ventas/nueva')
+        +icono('mas')
+        | Nueva venta
+    form.filtros-historial(method='get' action='/ventas')
+      .campo
+        label(for='numero') Número de venta
+        input#numero(name='numero' value=filtros.numero placeholder='V-00000001' maxlength='20')
+      .campo
+        label(for='fecha-venta') Fecha de venta
+        input#fecha-venta(name='fecha' type='date' value=filtros.fecha aria-invalid=errores.fecha ? 'true' : 'false')
+        if errores.fecha
+          p.error-campo= errores.fecha
+      button.boton.secundario(type='submit') Filtrar ventas
+      a.enlace(href='/ventas') Limpiar filtros
+    if ventas.length
+      .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de ventas; permite desplazamiento horizontal')
+        table
+          thead
+            tr
+              each texto in ['Número','Fecha y hora','Cliente','Total','Medio de pago','Detalle']
+                th(scope='col')= texto
+          tbody
+            each venta in ventas
+              tr
+                td
+                  a.enlace(href='/ventas/'+venta.id)= venta.numero
+                td= fecha(venta.fecha)
+                td= venta.cliente
+                td.importe= dinero(venta.total)
+                td= venta.pago.medio === 'efectivo' ? 'Efectivo' : 'Transferencia'
+                td
+                  a.enlace(href='/ventas/'+venta.id) Ver comprobante
+      nav.paginacion(aria-label='Paginación de ventas')
+        span #{total} #{total === 1 ? 'venta' : 'ventas'} · Página #{pagina} de #{paginas}
+        .flex.gap-2
+          if pagina > 1
+            a.boton.secundario(href=enlace({pagina:pagina-1})) Anterior
+          if pagina < paginas
+            a.boton.secundario(href=enlace({pagina:pagina+1})) Siguiente
+    else
+      .vacio
+        +icono('ventas')
+        h3 No hay ventas para mostrar
+        p Registra tu primera venta o cambia los filtros.

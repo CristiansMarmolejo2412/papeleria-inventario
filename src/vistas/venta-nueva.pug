@@ -1,0 +1,69 @@
+extends base
+block scripts
+  script(src='/js/dinero.js' defer)
+  script(src='/js/ventas.js' defer)
+block contenido
+  noscript
+    .aviso.error Activa JavaScript en el navegador para preparar el carrito de venta.
+  if Object.keys(errores).length
+    .aviso.error(role='alert')
+      div
+        strong No se obtuvo la confirmación de la venta. Revisa los mensajes antes de reintentar.
+        each mensaje, campo in errores
+          p= mensaje
+  .venta-rejilla(data-venta data-lineas=JSON.stringify(lineas) data-productos=JSON.stringify(productos) data-revisar=Object.keys(errores).length ? '1' : '0')
+    section.tarjeta.venta-catalogo
+      .encabezado-panel
+        div
+          h2 Encuentra un producto
+          p.subtitulo Busca por nombre, código interno o código de barras.
+        a.enlace(href='/ventas') Ver historial
+      form.venta-busqueda(data-buscar-productos)
+        label.sr-only(for='buscar-venta') Buscar productos para vender
+        .buscador
+          +icono('buscar')
+          input#buscar-venta(type='search' name='q' placeholder='Nombre o código del producto…' maxlength='120' autocomplete='off')
+        button.boton.secundario(type='submit') Buscar
+      p.nota(data-estado-busqueda role='status') Precios en COP. Solo se muestran productos activos.
+      .catalogo-lista(data-catalogo aria-live='polite')
+      nav.paginacion(aria-label='Páginas del catálogo')
+        button.boton.secundario(type='button' data-catalogo-anterior disabled) Anterior
+        span(data-catalogo-pagina) Página 1
+        button.boton.secundario(type='button' data-catalogo-siguiente) Siguiente
+    section.tarjeta.venta-carrito
+      h2 Detalle de venta
+      p.subtitulo Consumidor final
+      form#formulario-venta(method='post' action='/ventas')
+        input(type='hidden' name='_csrf' value=csrf)
+        input(type='hidden' name='operacion' value=datos.operacion)
+        input(type='hidden' name='carrito' value='[]')
+        .carrito-lista(data-carrito)
+        p.error-campo(data-error-carrito role='status')= errores.carrito || ''
+        .totales-venta
+          div
+            span Subtotal
+            strong(data-subtotal) $ 0
+          div.total-venta
+            span Total
+            strong(data-total) $ 0
+        .campo.mt-5
+          label(for='medio') Medio de pago
+          select#medio(name='medio')
+            option(value='efectivo' selected=datos.medio !== 'transferencia') Efectivo
+            option(value='transferencia' selected=datos.medio === 'transferencia') Transferencia
+          if errores.medio
+            p.error-campo= errores.medio
+        .campo.mt-5(data-efectivo)
+          label(for='recibido') Importe recibido (COP)
+          input#recibido(name='recibido' type='number' min='0' max='9999999999999999.99' step='0.01' value=datos.recibido || '' aria-invalid=errores.recibido ? 'true' : 'false' aria-describedby='error-recibido')
+          p#error-recibido.error-campo= errores.recibido || ''
+          p.cambio-venta Cambio: #[strong(data-cambio) —]
+        .campo.mt-5(data-transferencia hidden=datos.medio !== 'transferencia')
+          label(for='referencia') Referencia de transferencia (opcional)
+          input#referencia(name='referencia' maxlength='120' value=datos.referencia || '')
+          if errores.referencia
+            p.error-campo= errores.referencia
+          p.nota Registro manual. No verifica movimientos bancarios.
+        p.nota.mt-5 Esta venta se registra sin apertura ni cierre de caja.
+        button.boton.primario.confirmar-venta(type='submit') Confirmar venta
+        p.nota(data-estado-venta role='status') El total final y las existencias se verifican al confirmar.

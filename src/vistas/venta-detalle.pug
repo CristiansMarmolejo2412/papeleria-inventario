@@ -1,0 +1,66 @@
+extends base
+block scripts
+  script(src='/js/ventas.js' defer)
+block contenido
+  if confirmada
+    .aviso.no-imprimir(role='status') Venta confirmada. Las existencias y el pago se registraron correctamente.
+  .acciones-comprobante.no-imprimir
+    a.enlace(href='/ventas') ← Historial de ventas
+    .flex.gap-2
+      a.boton.secundario(href='/ventas/nueva') Nueva venta
+      button.boton.primario(type='button' data-imprimir) Imprimir comprobante
+  article.tarjeta.comprobante(data-comprobante=venta.operacion)
+    .encabezado-panel
+      div
+        p.eyebrow PAPELERÍA
+        h2 Comprobante interno
+        p.nota No es una factura electrónica.
+      strong.numero-comprobante= venta.numero
+    dl.detalles
+      div
+        dt Fecha y hora (Bogotá)
+        dd= fecha(venta.fecha)
+      div
+        dt Cliente
+        dd= venta.cliente
+      div
+        dt Responsable local
+        dd= venta.responsable
+    .tabla-contenedor(tabindex='0' role='region' aria-label='Detalle del comprobante')
+      table
+        thead
+          tr
+            each texto in ['Producto','Código','Cantidad','Precio unitario','Subtotal']
+              th(scope='col')= texto
+        tbody
+          each detalle in venta.detalles
+            tr
+              td.nombre-comprobante= detalle.nombre
+              td= detalle.codigo
+              td= detalle.cantidad
+              td.importe= dinero(detalle.precio)
+              td.importe= dinero(detalle.subtotal)
+    .resumen-pago
+      .totales-venta
+        div
+          span Subtotal
+          strong= dinero(venta.total)
+        div.total-venta
+          span Total pagado
+          strong= dinero(venta.total)
+        div
+          span Medio de pago
+          strong= venta.pago.medio === 'efectivo' ? 'Efectivo' : 'Transferencia'
+        if venta.pago.medio === 'efectivo'
+          div
+            span Recibido
+            strong= dinero(venta.pago.recibido)
+          div
+            span Cambio
+            strong= dinero(venta.pago.cambio)
+        else
+          div
+            span Referencia
+            strong= venta.pago.referencia || 'Sin referencia'
+          p.nota Transferencia registrada manualmente, sin verificación bancaria.
+    p.nota.mt-5 Este comprobante no acredita apertura ni cierre de caja. Gracias por tu compra.

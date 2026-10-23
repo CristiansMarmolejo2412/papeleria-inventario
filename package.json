@@ -17,7 +17,9 @@
     "demo": "node scripts/demo.js",
     "test": "node --test tests/validacion.test.js",
     "test:integracion": "node --test tests/integracion.test.js",
-    "test:navegador": "node --test tests/navegador.test.js"
+    "test:navegador": "node --test tests/navegador.test.js",
+    "test:ventas": "node --test tests/ventas.test.js",
+    "test:ventas:navegador": "node --test tests/ventas-navegador.test.js"
   },
   "dependencies": {
     "dotenv": "^18.0.9",

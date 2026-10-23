@@ -8,6 +8,7 @@ html(lang='es')
     link(rel='icon' href='/icono.svg' type='image/svg+xml')
     link(rel='stylesheet' href='/css/app.css')
     script(src='/js/app.js' defer)
+    block scripts
   body
     a.saltar(href='#contenido') Saltar al contenido
     aside#menu.lateral
@@ -19,7 +20,7 @@ html(lang='es')
       button.cerrar-menu(type='button' aria-label='Cerrar menú' data-menu)
         +icono('menu')
       nav(aria-label='Navegación principal')
-        each grupo in [{nombre:'PRINCIPAL', enlaces:[['/','inicio','Inicio'],['/pendiente/ventas','ventas','Ventas'],['/productos','productos','Productos'],['/inventario','productos','Inventario'],['/categorias','documento','Categorías']]},{nombre:'GESTIÓN',enlaces:[['/pendiente/clientes','clientes','Clientes'],['/pendiente/proveedores','documento','Proveedores'],['/pendiente/compras','documento','Compras'],['/pendiente/caja','caja','Caja y gastos'],['/pendiente/reportes','documento','Reportes'],['/pendiente/movimientos','documento','Movimientos']]},{nombre:'ADMINISTRACIÓN',enlaces:[['/pendiente/usuarios','clientes','Usuarios'],['/pendiente/configuracion','ajustes','Configuración']]}]
+        each grupo in [{nombre:'PRINCIPAL', enlaces:[['/','inicio','Inicio'],['/ventas/nueva','ventas','Nueva venta'],['/ventas','documento','Historial de ventas'],['/productos','productos','Productos'],['/inventario','productos','Inventario'],['/categorias','documento','Categorías']]},{nombre:'GESTIÓN',enlaces:[['/pendiente/clientes','clientes','Clientes'],['/pendiente/proveedores','documento','Proveedores'],['/pendiente/compras','documento','Compras'],['/pendiente/caja','caja','Caja y gastos'],['/pendiente/reportes','documento','Reportes'],['/pendiente/movimientos','documento','Movimientos']]},{nombre:'ADMINISTRACIÓN',enlaces:[['/pendiente/usuarios','clientes','Usuarios'],['/pendiente/configuracion','ajustes','Configuración']]}]
           p.grupo= grupo.nombre
           each item in grupo.enlaces
             a.nav-item(href=item[0] class=ruta === item[0] ? 'seleccionado' : '' aria-current=ruta === item[0] ? 'page' : undefined title=item[2])
@@ -27,7 +28,7 @@ html(lang='es')
               span= item[2]
       .nota-local
         span.punto
-        span Operación local · Primera entrega
+        span Operación local · Inventario y ventas
     .area-principal
       header.cabecera
         .flex.items-center.gap-3

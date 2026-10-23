@@ -1,10 +1,12 @@
 const { UniqueConstraintError } = require('sequelize');
 const { Categoria, Producto, Movimiento } = require('../modelos');
 const servicio = require('../servicios/inventario');
+const ventas = require('../servicios/ventas');
 const { ErrorValidacion } = require('../servicios/validacion');
 async function pagina(req, res) {
   const [lista, categorias, resumen] = await Promise.all([servicio.listar(req.query), Categoria.findAll({ order: [['nombre','ASC']] }), servicio.indicadores()]);
-  res.render('inventario', { ...lista, categorias, resumen, filtros: req.query, inicio: req.path === '/', titulo: req.path === '/' ? 'Resumen de tu papelería' : 'Productos e inventario' });
+  const ventasDia = req.path === '/' ? await ventas.resumenDia() : null;
+  res.render('inventario', { ...lista, categorias, resumen, ventasDia, filtros: req.query, inicio: req.path === '/', titulo: req.path === '/' ? 'Resumen de tu papelería' : 'Productos e inventario' });
 }
 async function formulario(req,res) {
   const producto = req.params.id ? await Producto.findByPk(req.params.id) : null;

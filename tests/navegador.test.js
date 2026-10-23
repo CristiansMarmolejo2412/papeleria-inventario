@@ -72,7 +72,7 @@ test('interfaz local, teclado, búsqueda y tamaños de pantalla', async () => {
     await pagina.getByRole('button',{name:'Desactivar producto'}).click();
     await pagina.getByText('Producto desactivado. Su historial se conserva.').waitFor();
     assert.equal((await Producto.findByPk(id)).activo,false);
-    await pagina.goto(origen+'/pendiente/ventas');
+    await pagina.goto(origen+'/pendiente/caja');
     assert.equal(await pagina.locator('button[type=submit]').count(),0);
     await pagina.goto(origen+'/productos/nuevo');
     await pagina.keyboard.press('Tab');

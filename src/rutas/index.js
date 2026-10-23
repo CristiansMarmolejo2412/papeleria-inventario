@@ -1,10 +1,18 @@
 const router = require('express').Router();
 const c = require('../controladores/inventario');
+const ventas = require('../controladores/ventas');
 router.get('/', c.pagina);
 router.get(['/productos','/inventario'], c.pagina);
 router.get('/productos/nuevo', c.formulario);
 router.post('/productos', c.guardar);
 router.param('id', (req,res,next,id) => /^\d{1,10}$/.test(id) ? next() : res.sendStatus(404));
+router.get('/ventas/nueva',ventas.nueva);
+router.get('/ventas/productos',ventas.buscar);
+router.get('/ventas',ventas.historial);
+router.post('/ventas',ventas.guardar);
+router.get('/ventas/:id',ventas.detalle);
+router.get('/pendiente/ventas',(req,res)=>res.redirect('/ventas/nueva'));
+router.get('/pendiente/historial',(req,res)=>res.redirect('/ventas'));
 router.get('/productos/:id/editar', c.formulario);
 router.get('/productos/:id', c.detalle);
 router.post('/productos/:id', c.guardar);

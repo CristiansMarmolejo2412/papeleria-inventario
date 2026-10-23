@@ -92,7 +92,11 @@ test('dos ventas distintas compiten por la última unidad; solo una se confirma'
 test('un error al guardar el pago revierte venta, detalles, movimientos y existencias',async()=>{
   const p=await producto('5'),q=await producto('5');const antes=await conteos(),datos=entrada([[p,2],[q,1]]);
   PagoVenta.addHook('beforeCreate','fallo_pago',()=>{throw new Error('Fallo controlado de pago');});
-  try {await assert.rejects(ventas.registrar(datos),/Fallo controlado/);}finally{PagoVenta.removeHook('beforeCreate','fallo_pago');}
+  try {
+    await assert.rejects(ventas.registrar(datos),/Fallo controlado/);
+    const respuesta=await request(app).post('/ventas').type('form').send({...datos,_csrf:csrf}).expect(503);
+    assert.match(respuesta.text,/Tu carrito se conserva/);assert.match(respuesta.text,new RegExp(p.codigo));
+  }finally{PagoVenta.removeHook('beforeCreate','fallo_pago');}
   assert.deepEqual(await conteos(),antes);assert.equal((await Producto.findByPk(p.id)).stock,5);assert.equal((await Producto.findByPk(q.id)).stock,5);
   const venta=await ventas.registrar(datos);assert.ok(venta.id,'La misma clave se puede reintentar tras una reversión');
 });

@@ -6,7 +6,7 @@ block contenido
   - const tonoResumen = hayAgotados ? 'resumen-agotado' : hayPocas ? 'resumen-precaucion' : 'resumen-correcto'
   if inicio
     .indicadores
-      each tarjeta in [{titulo:'Ventas de hoy',valor:'Pendiente',detalle:'Sin implementar',icono:'ventas',tono:'menta'},{titulo:resumen.activos === 1 ? 'Producto activo' : 'Productos activos',valor:resumen.activos,detalle:resumen.disponibles+' '+(resumen.disponibles === 1 ? 'producto con existencias' : 'productos con existencias'),icono:'productos',tono:'menta'},{titulo:'Pocas existencias',valor:resumen.pocas,detalle:resumen.agotados+' '+(resumen.agotados === 1 ? 'producto agotado' : 'productos agotados'),icono:hayAlertas ? 'alerta' : 'confirmacion',tono:hayAgotados ? 'rojo-suave' : hayPocas ? 'crema' : 'confirmacion'},{titulo:'Estado de caja',valor:'Pendiente',detalle:'Sin implementar',icono:'caja',tono:'menta'}]
+      each tarjeta in [{titulo:'Ventas de hoy',valor:dinero(ventasDia.total),detalle:ventasDia.cantidad+' '+(ventasDia.cantidad === 1 ? 'venta registrada' : 'ventas registradas'),icono:'ventas',tono:'menta'},{titulo:resumen.activos === 1 ? 'Producto activo' : 'Productos activos',valor:resumen.activos,detalle:resumen.disponibles+' '+(resumen.disponibles === 1 ? 'producto con existencias' : 'productos con existencias'),icono:'productos',tono:'menta'},{titulo:'Pocas existencias',valor:resumen.pocas,detalle:resumen.agotados+' '+(resumen.agotados === 1 ? 'producto agotado' : 'productos agotados'),icono:hayAlertas ? 'alerta' : 'confirmacion',tono:hayAgotados ? 'rojo-suave' : hayPocas ? 'crema' : 'confirmacion'},{titulo:'Estado de caja',valor:'Pendiente',detalle:'Sin implementar',icono:'caja',tono:'menta'}]
         article.tarjeta.indicador
           .circulo(class=tarjeta.tono)
             +icono(tarjeta.icono)
@@ -73,5 +73,9 @@ block contenido
         p.nota Compras y reportes estarán disponibles en próximas entregas.
   if inicio
     section.tarjeta.proximamente
-      h2 Ventas recientes
-      p.subtitulo Pendiente de implementación. Aquí aparecerán las ventas reales cuando se habilite ese módulo.
+      .encabezado-panel
+        div
+          h2 Historial de ventas
+          p.subtitulo Consulta tus comprobantes internos y filtra por fecha o número.
+        a.boton.primario(href='/ventas/nueva') Nueva venta
+      a.enlace(href='/ventas') Ver ventas registradas →

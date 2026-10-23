@@ -91,5 +91,5 @@ test('recorrido real de productos, filtros, persistencia y transacciones en MySQ
   await request(app).post('/categorias').type('form').send({nombre:categoria.nombre,activo:'1',_csrf:token}).expect(422).expect(/Ya existe/);
   await request(app).post(`/categorias/${categoria.id}`).type('form').send({nombre:categoria.nombre,activo:'0',_csrf:token}).expect(303);
   await assert.rejects(guardarProducto(datos('CATEGORIA-INACTIVA')),e => Boolean(e.errores.categoriaId));
-  await request(app).get('/pendiente/ventas').expect(200).expect(/Pendiente de implementación/);
+  await request(app).get('/pendiente/caja').expect(200).expect(/Pendiente de implementación/);
 });

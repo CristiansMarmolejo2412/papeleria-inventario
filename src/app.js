@@ -11,7 +11,7 @@ app.use(express.static(path.join(__dirname,'../public')));
 app.use(express.urlencoded({ extended: false, limit: '32kb' }));
 app.use((req,res,next) => {
   res.locals.ruta = req.path; res.locals.csrf = token;
-  res.locals.dinero = (valor) => new Intl.NumberFormat('es-CO',{ style:'currency', currency:'COP', maximumFractionDigits:2 }).format(valor);
+  res.locals.dinero = require('../public/js/dinero').formato;
   res.locals.fecha = (valor) => new Intl.DateTimeFormat('es-CO',{ dateStyle:'medium', timeStyle:'short', timeZone:'America/Bogota' }).format(new Date(valor));
   res.locals.disponibilidad = (p) => !p.activo ? 'Inactivo' : p.stock === 0 ? 'Agotado' : p.stock <= p.minimo ? 'Pocas existencias' : 'Disponible';
   res.locals.enlace = (cambios) => `?${new URLSearchParams({ ...req.query, ...cambios })}`;

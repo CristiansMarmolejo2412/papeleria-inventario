@@ -53,7 +53,7 @@
   .tarjeta { background: var(--color-superficie); border: 1px solid #e2d5c3; border-radius: 13px; padding: 22px; box-shadow: 0 3px 15px #795c4308; }
   .indicador { display: flex; align-items: flex-start; gap: 16px; min-height: 137px; padding: 20px 16px; }
   .indicador h2 { color: #706253; font-size: 14px; font-weight: 600; letter-spacing: 0; }
-  .cifra { display: block; font-size: 29px; font-weight: 750; line-height: 1.4; letter-spacing: -.7px; }
+  .cifra { display: block; font-size: 29px; font-weight: 750; line-height: 1.4; letter-spacing: -.7px; overflow-wrap: anywhere; }
   .cifra.pendiente { font-size: 22px; margin-top: 4px; }
   .indicador small { color: #58716b; font-size: 12px; }
   .circulo { border-radius: 50%; width: 57px; height: 57px; flex-shrink: 0; display: grid; place-items: center; }
@@ -193,3 +193,62 @@
   h2 { font-size: 19px; }
 }
 @media (prefers-reduced-motion:reduce) { *, *::before, *::after { transition: none !important; scroll-behavior: auto !important; } }
+
+@layer components {
+  .venta-rejilla { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(330px,1fr); gap:20px; align-items:start; }
+  .venta-catalogo,.venta-carrito { min-width:0; }
+  .venta-busqueda { display:flex; gap:10px; margin:18px 0 10px; }
+  .venta-busqueda .buscador { flex:1; min-width:0; }
+  .venta-busqueda input { padding-left:36px; }
+  .catalogo-lista { display:grid; gap:10px; margin-top:15px; }
+  .catalogo-producto { display:flex; justify-content:space-between; gap:14px; border:1px solid #e2d5c3; border-radius:10px; padding:15px; }
+  .catalogo-informacion { min-width:0; overflow-wrap:anywhere; }
+  .catalogo-informacion h3 { font-size:15px; }
+  .catalogo-informacion > strong { display:block; margin-top:7px; color:#087f79; }
+  .catalogo-accion { display:flex; flex-direction:column; align-items:flex-end; gap:9px; text-align:right; }
+  .catalogo-accion .nota { font-size:11px; }
+  .carrito-lista { margin-top:18px; }
+  .carrito-linea { border-bottom:1px solid #e2d5c3; padding:15px 0; }
+  .carrito-producto { overflow-wrap:anywhere; }
+  .carrito-producto strong { display:block; font-size:14px; }
+  .carrito-producto small { display:block; color:#706253; margin-top:4px; }
+  .carrito-controles { display:flex; align-items:flex-end; gap:18px; margin-top:11px; }
+  .carrito-controles label { font-size:12px; color:#706253; }
+  .carrito-controles input { display:block; margin-top:4px; width:110px; padding:7px 9px; }
+  .carrito-controles button { padding:7px 0; }
+  .vacio-carrito { padding:25px 5px; color:#706253; line-height:1.7; }
+  .totales-venta { display:grid; gap:13px; padding-top:20px; }
+  .totales-venta > div { display:flex; justify-content:space-between; gap:15px; }
+  .totales-venta strong { text-align:right; overflow-wrap:anywhere; min-width:0; }
+  .total-venta { font-size:23px; font-weight:700; border-top:1px solid #e2d5c3; padding-top:12px; }
+  .cambio-venta { margin-top:10px; color:#08746e; }
+  .confirmar-venta { width:100%; margin:20px 0 10px; }
+  .filtros-historial { display:flex; align-items:flex-end; flex-wrap:wrap; gap:15px; margin:25px 0; }
+  .filtros-historial .campo { flex:1; min-width:160px; }
+  .acciones-comprobante { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:18px; flex-wrap:wrap; }
+  .comprobante { max-width:1050px; }
+  .numero-comprobante { color:#795c43; font-size:22px; }
+  .resumen-pago { max-width:400px; margin:15px 0 0 auto; }
+  .nombre-comprobante { white-space:normal; min-width:130px; overflow-wrap:anywhere; }
+}
+@media (max-width:1100px) { .venta-rejilla { grid-template-columns:minmax(0,1fr); } }
+@media (max-width:760px) {
+  .catalogo-producto { padding:12px; gap:8px; }
+  .venta-busqueda { flex-wrap:wrap; }
+  .venta-busqueda .buscador { flex-basis:100%; }
+  .numero-comprobante { font-size:18px; }
+}
+@media print {
+  @page { margin:15mm; }
+  body { background:white; color:black; font-size:11pt; }
+  .lateral,.cabecera,footer,.saltar,.no-imprimir { display:none !important; }
+  .area-principal,body.menu-plegado .area-principal { margin:0; padding:0; max-width:none; }
+  .comprobante { border:0; padding:0; max-width:none; box-shadow:none; }
+  .comprobante .tabla-contenedor { overflow:visible; }
+  .comprobante table { white-space:normal; font-size:10pt; }
+  .comprobante th,.comprobante td { padding:8px 5px; }
+  .comprobante tr { break-inside:avoid; }
+  .comprobante .detalles { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .nombre-comprobante { min-width:0; }
+  .resumen-pago { break-inside:avoid; }
+}
