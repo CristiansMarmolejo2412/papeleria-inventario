@@ -262,3 +262,9 @@
   .nombre-comprobante { min-width:0; }
   .resumen-pago { break-inside:avoid; }
 }
+
+.selector-venta { display:flex; gap:.5rem; margin:1rem 0; }
+.selector-venta [aria-pressed="true"] { background:#087F79; color:white; border-color:#087F79; }
+.accesos-servicios { margin:1rem 0; color:#795C43; }
+.accesos-servicios summary { cursor:pointer; font-weight:600; margin-bottom:.75rem; }
+.accesos-servicios .boton { white-space:normal; text-align:left; }

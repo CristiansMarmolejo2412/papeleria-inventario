@@ -21,7 +21,9 @@
     "test:ventas": "node --test tests/ventas.test.js",
     "test:ventas:navegador": "node --test tests/ventas-navegador.test.js",
     "test:compras": "node --test tests/compras.test.js",
-    "test:compras:navegador": "node --test tests/compras-navegador.test.js"
+    "test:compras:navegador": "node --test tests/compras-navegador.test.js",
+    "test:servicios": "node --test tests/servicios.test.js",
+    "test:servicios:navegador": "node --test tests/servicios-navegador.test.js"
   },
   "dependencies": {
     "dotenv": "^18.0.9",

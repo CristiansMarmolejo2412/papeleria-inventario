@@ -74,12 +74,16 @@ block contenido
           +icono('documento')
           | Registrar recepción
           span →
+        a.acceso(href='/servicios')
+          +icono('documento')
+          | Gestionar servicios
+          span →
         p.nota Los reportes estarán disponibles en próximas entregas.
   if inicio
     section.tarjeta.proximamente
       .encabezado-panel
         div
           h2 Historial de ventas
-          p.subtitulo Consulta tus comprobantes internos y filtra por fecha o número.
+          p.subtitulo Productos y servicios incluidos. Consulta por fecha o número.
         a.boton.primario(href='/ventas/nueva') Nueva venta
       a.enlace(href='/ventas') Ver ventas registradas →

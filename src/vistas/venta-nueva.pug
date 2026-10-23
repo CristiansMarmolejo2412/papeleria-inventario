@@ -11,18 +11,28 @@ block contenido
         strong No se obtuvo la confirmación de la venta. Revisa los mensajes antes de reintentar.
         each mensaje, campo in errores
           p= mensaje
-  .venta-rejilla(data-venta data-lineas=JSON.stringify(lineas) data-productos=JSON.stringify(productos) data-revisar=Object.keys(errores).length ? '1' : '0')
+  .venta-rejilla(data-venta data-accesos=JSON.stringify(accesos) data-lineas=JSON.stringify(lineas) data-productos=JSON.stringify(productos) data-revisar=Object.keys(errores).length ? '1' : '0')
     section.tarjeta.venta-catalogo
       .encabezado-panel
         div
-          h2 Encuentra un producto
+          h2 Productos y servicios
           p.subtitulo Busca por nombre, código interno o código de barras.
         a.enlace(href='/ventas') Ver historial
+      .selector-venta(role='group' aria-label='Tipo de artículo')
+        button.boton.secundario(type='button' data-tipo-venta='producto' aria-pressed='true') Productos
+        button.boton.secundario(type='button' data-tipo-venta='servicio' aria-pressed='false') Servicios
+      p.nota En servicios por página o cara, la cantidad indica las páginas o caras cobradas. Los servicios no descuentan inventario; el consumo de insumos está pendiente.
+      if accesos.length
+        details.accesos-servicios
+          summary Servicios rápidos
+          .flex.flex-wrap.gap-2(data-accesos-servicios)
+      else
+        div(data-accesos-servicios)
       form.venta-busqueda(data-buscar-productos)
-        label.sr-only(for='buscar-venta') Buscar productos para vender
+        label.sr-only(for='buscar-venta') Buscar productos o servicios para vender
         .buscador
           +icono('buscar')
-          input#buscar-venta(type='search' name='q' placeholder='Nombre o código del producto…' maxlength='120' autocomplete='off')
+          input#buscar-venta(type='search' name='q' placeholder='Nombre o código…' maxlength='120' autocomplete='off')
         button.boton.secundario(type='submit') Buscar
       p.nota(data-estado-busqueda role='status') Precios en COP. Solo se muestran productos activos.
       .catalogo-lista(data-catalogo aria-live='polite')
