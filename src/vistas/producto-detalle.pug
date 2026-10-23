@@ -1,0 +1,36 @@
+extends base
+block contenido
+  section.tarjeta
+    .encabezado-panel
+      div
+        p.eyebrow FICHA DEL PRODUCTO
+        h2= producto.nombre
+        +estado(producto)
+      a.boton.primario(href='/productos/'+producto.id+'/editar') Editar producto
+    dl.detalles
+      each dato in [['Código interno',producto.codigo],['Código de barras',producto.barras || 'Sin código'],['Categoría',producto.categoria.nombre],['Marca',producto.marca || 'Sin marca'],['Ubicación',producto.ubicacion || 'Sin ubicación'],['Compra',dinero(producto.compra)],['Venta',dinero(producto.venta)],['Existencias',producto.stock],['Cantidad mínima',producto.minimo],['Creado',fecha(producto.creadoEn)]]
+        div
+          dt= dato[0]
+          dd= dato[1]
+    if producto.activo
+      form(method='post' action='/productos/'+producto.id+'/desactivar' data-confirmar='¿Desactivar este producto? Su historial se conservará.' data-guardar)
+        input(type='hidden' name='_csrf' value=csrf)
+        button.boton.peligro(type='submit') Desactivar producto
+  section.tarjeta.mt-5
+    h2 Movimiento inicial
+    p.subtitulo Los movimientos operativos completos están pendientes de implementación.
+    .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de movimientos; permite desplazamiento horizontal')
+      table
+        thead
+          tr
+            each texto in ['Fecha (Bogotá)','Tipo','Cantidad','Responsable','Motivo']
+              th(scope='col')= texto
+        tbody
+          each movimiento in movimientos
+            tr
+              td= fecha(movimiento.fecha)
+              td= movimiento.tipo
+              td= movimiento.cantidad
+              td= movimiento.responsable
+              td= movimiento.motivo
+  a.enlace.volver(href='/productos') ← Volver a productos

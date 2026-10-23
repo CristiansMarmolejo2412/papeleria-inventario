@@ -1,0 +1,42 @@
+if productos.length
+  .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de productos; permite desplazamiento horizontal')
+    table
+      caption.sr-only Productos encontrados
+      thead
+        tr
+          th(scope='col') Producto
+          th(scope='col') Categoría
+          th(scope='col') Precio de venta
+          th(scope='col') Existencias
+          th(scope='col') Disponibilidad
+          th(scope='col') Acciones
+      tbody
+        each producto in productos
+          tr
+            td
+              .producto-nombre
+                .mini-producto
+                  +icono('productos')
+                div
+                  a.nombre(href='/productos/'+producto.id)= producto.nombre
+                  small= producto.codigo
+            td= producto.categoria.nombre
+            td.importe= dinero(producto.venta)
+            td= producto.stock
+            td
+              +estado(producto)
+            td
+              a.enlace(href='/productos/'+producto.id+'/editar' aria-label='Editar '+producto.nombre) Editar
+  nav.paginacion(aria-label='Paginación')
+    span #{total} productos · Página #{pagina} de #{paginas}
+    .flex.gap-2
+      if pagina > 1
+        a.boton.secundario(href=enlace({pagina:pagina-1})) Anterior
+      if pagina < paginas
+        a.boton.secundario(href=enlace({pagina:pagina+1})) Siguiente
+else
+  .vacio
+    +icono('productos')
+    h3 No hay productos para mostrar
+    p Crea tu primer producto o cambia los filtros de búsqueda.
+    a.enlace(href='/productos/nuevo') Registrar un producto →

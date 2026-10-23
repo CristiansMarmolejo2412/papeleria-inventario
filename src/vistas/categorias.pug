@@ -1,0 +1,31 @@
+extends base
+block contenido
+  section.tarjeta
+    h2 Organiza tus productos
+    p.subtitulo Las categorías inactivas conservan sus productos y no se pueden asignar a productos nuevos.
+    if Object.keys(errores).length
+      .aviso.error(role='alert') No se guardaron los cambios. Revisa el nombre y el estado.
+    if datos.id
+      h3.mt-5 Editar categoría
+    form.formulario-categoria(method='post' action=datos.id ? '/categorias/'+datos.id : '/categorias' data-guardar)
+      input(type='hidden' name='_csrf' value=csrf)
+      +campo('nombre','Nombre de la categoría *','text',datos.nombre,errores,{maxlength:80,required:true})
+      .campo
+        label(for='estado-categoria') Estado
+        select#estado-categoria(name='activo')
+          option(value='1' selected=String(datos.activo) !== '0' && datos.activo !== false) Activa
+          option(value='0' selected=String(datos.activo) === '0' || datos.activo === false) Inactiva
+        if errores.activo
+          p.error-campo= errores.activo
+      button.boton.primario(type='submit')= datos.id ? 'Guardar cambios' : 'Crear categoría'
+    if datos.id
+      a.enlace.volver(href='/categorias') Cancelar edición
+    if categorias.length
+      h2.mt-8 Categorías registradas
+      each categoria in categorias
+        .fila-categoria
+          strong= categoria.nombre
+          span.etiqueta(class=categoria.activo ? 'verde' : 'gris')= categoria.activo ? 'Activa' : 'Inactiva'
+          a.boton.secundario(href='/categorias/'+categoria.id+'/editar') Editar
+    else
+      .vacio Todavía no hay categorías. Crea la primera para registrar productos.

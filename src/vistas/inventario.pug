@@ -1,0 +1,67 @@
+extends base
+block contenido
+  if inicio
+    .indicadores
+      each tarjeta in [{titulo:'Ventas de hoy',valor:'Pendiente',detalle:'Sin implementar',icono:'ventas',tono:'menta'},{titulo:'Productos activos',valor:resumen.activos,detalle:resumen.disponibles+' con existencias',icono:'productos',tono:'menta'},{titulo:'Pocas existencias',valor:resumen.pocas,detalle:resumen.agotados+' agotados',icono:'alerta',tono:'crema'},{titulo:'Estado de caja',valor:'Pendiente',detalle:'Sin implementar',icono:'caja',tono:'menta'}]
+        article.tarjeta.indicador
+          .circulo(class=tarjeta.tono)
+            +icono(tarjeta.icono)
+          div
+            h2= tarjeta.titulo
+            strong.cifra(class=tarjeta.valor === 'Pendiente' ? 'pendiente' : '')= tarjeta.valor
+            small= tarjeta.detalle
+  .rejilla-inventario
+    section.tarjeta.panel-productos(aria-label='Consulta de productos')
+      .encabezado-panel
+        div
+          h2 Productos
+          p.subtitulo Encuentra lo que necesitas en segundos.
+        a.boton.primario(href='/productos/nuevo')
+          +icono('mas')
+          | Nuevo producto
+      form.filtros(method='get' action=ruta data-busqueda)
+        .buscador
+          label.sr-only(for='q') Buscar por nombre o código
+          +icono('buscar')
+          input#q(type='search' name='q' value=filtros.q placeholder='Buscar por nombre o código…' maxlength='120' autocomplete='off')
+        div
+          label.sr-only(for='categoria') Categoría
+          select#categoria(name='categoria')
+            option(value='') Todas las categorías
+            each categoria in categorias
+              option(value=categoria.id selected=String(filtros.categoria) === String(categoria.id)) #{categoria.nombre}#{categoria.activo ? '' : ' (inactiva)'}
+        div
+          label.sr-only(for='estado') Estado del producto
+          select#estado(name='estado')
+            option(value='activos' selected=!filtros.estado || filtros.estado === 'activos') Activos
+            option(value='inactivos' selected=filtros.estado === 'inactivos') Inactivos
+            option(value='todos' selected=filtros.estado === 'todos') Todos los estados
+        input(type='hidden' name='disponibilidad' value=filtros.disponibilidad || '')
+        button.boton.secundario(type='submit') Buscar
+      nav.pestanas(aria-label='Disponibilidad')
+        each filtro in [['','Todos'],['disponibles','Disponibles'],['pocas','Pocas existencias'],['agotados','Agotados']]
+          a(href=enlace({disponibilidad:filtro[0],pagina:1}) class=(filtros.disponibilidad || '') === filtro[0] ? 'activa' : '' aria-current=(filtros.disponibilidad || '') === filtro[0] ? 'page' : undefined)= filtro[1]
+      #resultados(data-resultados aria-live='polite' aria-busy='false')
+        include tabla-productos
+    aside.complementos
+      section.tarjeta.atencion
+        .circulo.crema
+          +icono('alerta')
+        h2 Tu inventario, al día
+        p #{resumen.pocas} productos con pocas existencias y #{resumen.agotados} agotados, entre los productos activos.
+        a.boton.amarillo(href='/inventario?disponibilidad=pocas') Revisar existencias
+      section.tarjeta.accesos
+        h2 Accesos rápidos
+        a.acceso(href='/productos/nuevo')
+          +icono('productos')
+          | Nuevo producto
+          span →
+        a.acceso(href='/categorias')
+          +icono('documento')
+          | Gestionar categorías
+          span →
+        p.nota Compras y reportes estarán disponibles en próximas entregas.
+  if inicio
+    section.tarjeta.proximamente
+      h2 Ventas recientes
+      p.subtitulo Pendiente de implementación. Aquí aparecerán las ventas reales cuando se habilite ese módulo.

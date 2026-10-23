@@ -1,0 +1,22 @@
+const router = require('express').Router();
+const c = require('../controladores/inventario');
+router.get('/', c.pagina);
+router.get(['/productos','/inventario'], c.pagina);
+router.get('/productos/nuevo', c.formulario);
+router.post('/productos', c.guardar);
+router.param('id', (req,res,next,id) => /^\d{1,10}$/.test(id) ? next() : res.sendStatus(404));
+router.get('/productos/:id/editar', c.formulario);
+router.get('/productos/:id', c.detalle);
+router.post('/productos/:id', c.guardar);
+router.post('/productos/:id/desactivar', c.desactivar);
+router.get('/categorias', (req,res) => c.categorias(req,res));
+router.get('/categorias/:id/editar', c.editarCategoria);
+router.post('/categorias', c.guardarCategoria);
+router.post('/categorias/:id', c.guardarCategoria);
+const pendientes = { ventas:'Ventas', caja:'Caja y gastos', clientes:'Clientes', proveedores:'Proveedores', compras:'Compras', reportes:'Reportes', configuracion:'Configuración', usuarios:'Usuarios', movimientos:'Movimientos', servicios:'Servicios', historial:'Historial' };
+router.get('/pendiente/:seccion', (req,res,next) => {
+  const titulo = pendientes[req.params.seccion];
+  if (!titulo) return next();
+  res.render('mensaje', { titulo, mensaje: 'Pendiente de implementación. Esta entrega permite gestionar productos, categorías y consultar existencias. Aquí todavía no se registran operaciones.' });
+});
+module.exports = router;
