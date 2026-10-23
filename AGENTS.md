@@ -2,7 +2,7 @@
 
 ## Alcance y comunicación
 
-- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. Están implementados productos, inventario base, ventas e historial y proveedores con recepción de compras. Usuarios y caja continúan pendientes. No iniciar módulos posteriores sin indicación.
+- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. Están implementados productos, inventario base, ventas e historial, proveedores con recepción de compras y servicios integrados con ventas. Usuarios y caja continúan pendientes. No iniciar módulos posteriores sin indicación.
 - Escribir documentación, interfaz, validaciones, explicaciones y descripciones de commits en español. Usar nombres de código consistentes y sin tildes.
 - No marcar como implementadas o probadas funciones que solo estén planificadas. Actualizar README y `docs/estado.md` al finalizar cada etapa; informar cambios, verificaciones realmente ejecutadas, pendientes y commits.
 
@@ -26,6 +26,7 @@
 - Conservar precios y costos históricos. No borrar registros necesarios para el historial: desactivar o anular con trazabilidad.
 - Registrar motivo y responsable de ajustes, devoluciones y anulaciones. Separar existencias físicas y prestación de servicios.
 - Mantener respaldos de la base de datos independientes de Git y verificar restauraciones antes de declarar lista esa función.
+- Servicios: catálogo independiente sin stock. Ventas solo de servicios o mixtas; bloquear productos por ID y luego servicios por ID, validar actividad/precio en servidor y guardar unidades e importes históricos en `detalles_servicio`. No generar movimientos para servicios ni simular existencias. Consumo y costos de insumos siguen pendientes; conservar Consumidor final y el responsable local.
 
 ## Git y verificación
 

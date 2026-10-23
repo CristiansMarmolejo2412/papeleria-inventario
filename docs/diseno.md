@@ -1,5 +1,7 @@
 # Guía de diseño e interacción
 
+Servicios integrados: enlace propio en el menú y acceso desde inicio; catálogo en superficie clara con búsqueda, estados y páginas. Nueva venta ofrece selector Productos/Servicios turquesa, servicios rápidos desplegables y unidad junto al precio y en el carrito. Por página/cara se explica la cantidad cobrada; los servicios no muestran stock ficticio. Comprobante e historial identifican el tipo. Se conserva crema, beige, café y amarillo con errores junto a los campos y carrito recuperable. Revisado en Chrome a 1366 y 360 píxeles; tablas desplazables dentro de su panel en móvil.
+
 Estado: diseño base implementado para inicio, inventario, productos, categorías, ventas, historial, comprobante, proveedores, compras recibidas y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Inicio muestra ventas reales del día y caja permanece pendiente; no se copiaron cifras simuladas de la referencia.
 
 ## Dirección visual

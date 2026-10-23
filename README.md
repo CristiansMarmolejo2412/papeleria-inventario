@@ -10,6 +10,8 @@ Ventas básicas e historial implementados: carrito de varios productos, efectivo
 
 Proveedores y compras recibidas implementados: registro, edición, búsqueda, paginación y desactivación de proveedores; recepción de varios productos con costos exactos, aumento de stock y detalle histórico. Las recepciones son definitivas y no generan pagos ni salidas de caja.
 
+Servicios implementados: catálogo con código único, nombre, categoría, unidad de cobro, precio positivo y descripción; búsqueda, edición, activación y desactivación. Ventas solo de servicios o mixtas con productos, con importes y unidades históricos en comprobantes e historial. El resumen diario incluye ambos tipos; los indicadores de inventario siguen contando únicamente productos físicos.
+
 La interfaz usa fondo crema, menú beige madera claro y detalles café y amarillo suave, con acciones principales turquesa y superficies claras para tablas y formularios. El resumen de existencias distingue ausencia de alertas (verde con confirmación), pocas existencias (amarillo) y agotados (rojo suave), con contadores en singular o plural según corresponda.
 
 ## Tecnologías previstas
@@ -152,6 +154,8 @@ npm.cmd run test:ventas
 npm.cmd run test:ventas:navegador
 npm.cmd run test:compras
 npm.cmd run test:compras:navegador
+npm.cmd run test:servicios
+npm.cmd run test:servicios:navegador
 ```
 
 Las pruebas de integración, ventas, compras y navegador usan exclusivamente `papeleria_promax_prueba`, con las credenciales de `.env`. Ejecuta los comandos de prueba secuencialmente. Las pruebas de ventas y compras aplican sus migraciones automáticamente; para la prueba original de navegador, prepara primero el esquema:
@@ -177,7 +181,21 @@ Después de detener ese servidor, ejecuta `Remove-Item Env:DB_NAME` antes de vol
 
 Consulta [el estado y las limitaciones verificadas](docs/estado.md). Los respaldos y la restauración siguen pendientes; Git no conserva los datos de MySQL.
 
-## Organización
+## Registrar un servicio y una venta mixta
+
+1. Si hay un servidor anterior, detenlo con `Ctrl+C` en su terminal. Desde el repositorio ejecuta `npm.cmd run db:migrar` y `npm.cmd start`; abre **http://127.0.0.1:3000**.
+2. En **Servicios → Nuevo servicio**, registra un código único, nombre de la variante, categoría, unidad de cobro y el precio real de tu negocio. La descripción es opcional. Guarda el servicio activo. No se instalan servicios ni precios de ejemplo en la base principal.
+3. En **Nueva venta**, busca y agrega un producto. Cambia el selector a **Servicios** y busca por nombre, código o categoría; también puedes abrir **Servicios rápidos** (los primeros ocho activos por nombre). Agrega el servicio y ajusta su cantidad. Por página o cara, la cantidad corresponde a las páginas o caras cobradas, sin deducir hojas ni otras equivalencias.
+4. Repetir un artículo acumula su cantidad en una línea; productos y servicios se distinguen aunque compartan código. Puedes quitar líneas. El precio se toma del catálogo y no se edita en la venta.
+5. Selecciona efectivo e importe recibido, o transferencia manual con referencia opcional. Confirma y revisa el comprobante interno; desde allí puedes imprimir y consultar el historial. También puedes registrar una venta que solo contenga servicios.
+
+El servidor recalcula con centavos `BigInt`, bloquea primero productos por ID ascendente y después servicios por ID ascendente, comprueba su estado vigente y confirma venta, detalles, pago y movimientos físicos juntos. La clave de operación y la huella conservan los reintentos anteriores de ventas solo de productos y rechazan reutilización con otros datos. Ante un error se mantiene el carrito y la misma clave; revisa la confirmación antes de abrir otra venta.
+
+La migración aditiva `004-servicios.js` crea el catálogo y `detalles_servicio`, sin modificar ni borrar ventas previas. Cada detalle de servicio conserva código, nombre, unidad, precio, cantidad y subtotal. No tiene existencias ni costo ficticio; cambiar su precio o desactivarlo conserva el historial. Los movimientos solo corresponden a productos físicos. Las ventas del día incluyen ambos tipos; caja sigue pendiente. Consumo de papel, tinta y otros insumos, costos de servicios, clientes, autenticación, crédito y descuentos requieren etapas posteriores.
+
+Las pruebas de servicios usan exclusivamente la base de pruebas, comprueban operaciones reales de MySQL y limpian solo sus registros. El recorrido de Chrome genera capturas de escritorio/móvil y PDF en `test-results/`; no se verificó una impresora física.
+
+## Organización del código
 
 `src/rutas` recibe solicitudes; `src/controladores` prepara respuestas; `src/servicios` valida y aplica reglas; `src/modelos` define persistencia; `src/vistas` contiene Pug. `migraciones` mantiene el esquema y `public` sirve recursos locales. Los estilos fuente están en `src/estilos`; el CSS generado se regenera con `npm.cmd run css` y no se versiona.
 

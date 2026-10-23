@@ -38,7 +38,15 @@ Idioma de documentación, interfaz y validaciones: español. Nombres de código 
 9. Mantener separadas las existencias de productos y la prestación de servicios.
 10. Las copias de seguridad de MySQL son independientes de Git. No versionar datos reales, credenciales ni respaldos.
 
-## Decisiones pendientes
+## Servicios integrados implementados
+
+Catálogo con código único incluso inactivo, nombre, categoría y unidad de cobro obligatorios, descripción opcional y precio positivo `DECIMAL(12,2)`. Cada variante es independiente. Registro, edición, búsqueda, paginación, activación y desactivación; ninguna carga automática de precios en la principal.
+
+Ventas de servicios o mixtas, cantidades enteras positivas, selector de tipo, búsqueda y accesos a ocho servicios activos. Cantidad por página/cara significa páginas/caras cobradas. El precio no es editable en venta; se valida actividad y se recalcula con precio vigente. Historial y comprobantes distinguen tipos, conservando código, nombre, unidad y precio históricos de servicio. Consumidor final y pago único siguen vigentes.
+
+Transacción única con detalles de servicio separados de los físicos; bloqueo de productos por ID y luego servicios por ID, sin movimientos ni stock ficticio para servicios. Clave persistente y huella por tipo evitan duplicados y cambios de contenido; los reintentos de ventas físicas anteriores siguen compatibles. El resumen diario incluye servicios; inventario solo productos físicos. Consumo automático de papel/tinta, costos de servicios y sus ganancias siguen pendientes, igual que caja, clientes, crédito, descuentos y autenticación.
+
+## Decisiones generales pendientes
 
 En la entrega 1 se decidió usar MySQL 8.0.16 o posterior, códigos únicos incluso en inactivos, cantidades enteras e importes `DECIMAL(12,2)` recibidos como cadenas con máximo dos decimales, sin redondeo implícito. Los códigos internos se normalizan a mayúsculas y los códigos de barras vacíos se almacenan como `NULL`. Las fechas se almacenan en UTC y se muestran en Bogotá. El stock solo se establece durante el alta, junto con el movimiento inicial, y no se edita directamente.
 

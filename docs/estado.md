@@ -100,12 +100,36 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 
 ## Límites y pendientes
 
-- Pendientes: autenticación, permisos, movimientos operativos completos, caja, descuentos, crédito, pagos combinados, anulaciones, devoluciones, clientes, órdenes pendientes, recepciones parciales, cuentas por pagar, pagos a proveedores, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones. Ventas básicas, proveedores y recepciones, sus historiales e indicadores diarios están implementados; el plan distingue el alcance completo de cada módulo.
+- Pendientes: autenticación, permisos, movimientos operativos completos, caja, descuentos, crédito, pagos combinados, anulaciones, devoluciones, clientes, órdenes pendientes, recepciones parciales, cuentas por pagar, pagos a proveedores, presentaciones, consumo/costos de insumos de servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones. Ventas, servicios, proveedores y recepciones, sus historiales e indicadores diarios están implementados; el plan distingue el alcance completo de cada módulo.
 - El responsable local es un nombre de configuración; no existe aún autenticación ni una identidad de usuario verificable. El servidor escucha en `127.0.0.1` por defecto.
 - Se verificó ausencia de dependencias externas durante las solicitudes, sin desconectar físicamente Windows de internet. No se realizó auditoría integral con lector de pantalla ni medición automatizada de todos los contrastes. Otras versiones de Node y otros navegadores permanecen sin verificar.
 - Node 26 emite una advertencia de obsolescencia durante la compilación de Tailwind; el comando termina correctamente. La herramienta de paquetes también informa un script nativo opcional de vigilancia sin aprobar; la compilación y el recorrido verificados funcionan con el binario disponible. No se modificó la política de scripts del sistema.
 
 ## Git y siguiente tarea
+
+### Cierre actual: servicios integrados — 23 de octubre de 2026
+
+- `feat/servicios` creada desde `feat/proveedores-compras` en `d79841b`, con árbol inicialmente limpio, ventas, compras y diseño cálido. No se fusiona a `main`.
+- Catálogo: código único incluso inactivo, nombre, categoría, unidad de cobro, precio positivo y descripción opcional. Alta, edición, búsqueda, paginación, activación y desactivación. Cada variante es independiente; sin servicios ni precios de demostración en la principal.
+- Ventas solo de servicios o mixtas, selector, búsqueda y accesos a los primeros ocho servicios activos por nombre. Cantidades enteras y acumulación por tipo/identificador; unidad visible y explicación de páginas/caras cobradas. Consumidor final, responsable local, efectivo/cambio y transferencia manual conservados; precio no editable en venta.
+- Comprobantes e historial distinguen tipos. `detalles_servicio` conserva código, nombre, unidad, precio, cantidad y subtotal históricos. No altera detalles físicos anteriores ni inventa costos. Cambiar catálogo o desactivar conserva el historial.
+- Transacción única de venta, ambos detalles, pago, movimientos y stock físico; productos bloqueados por ID y después servicios por ID. Servidor valida precio y estado vigentes. Servicios sin existencias ni movimientos. Clave/huella distinguen tipos y conservan los reintentos antiguos de productos. Resumen diario incluye ambos; inventario cuenta solo productos físicos.
+- Consumo/costos de papel, tinta e insumos, autenticación, clientes, caja, crédito y descuentos siguen pendientes. No se inició otro módulo.
+
+Verificaciones ejecutadas, todas aprobadas: **32 pruebas en nueve comandos**.
+
+- `npm.cmd test` (7): validaciones, protección del arranque y compilación de todas las plantillas. `npm.cmd run css`: correcto, con la advertencia conocida de Node/Tailwind.
+- `npm.cmd run test:servicios` (6): catálogo HTTP, campos inválidos, duplicados, búsqueda/paginación/estados; venta solo de servicios sin movimientos, mezcla con stock solo físico, totales y precio del servidor, cantidades/tipos inválidos e inactivos, pago insuficiente y carrito conservado. Históricos tras cambios/desactivación, persistencia desde otro proceso, resumen diario, comprobante e historial.
+- Doble envío simultáneo: una venta y un detalle; clave con otra cantidad rechazada. Dos ventas mixtas por la última unidad: solo una confirmada. Fallo provocado al crear el pago: reversión de venta, ambos detalles, movimientos y stock. Reintentos de productos compatibles con el tipo explícito.
+- `npm.cmd run test:servicios:navegador` (1): Chrome a 1366/360 píxeles, catálogo y estados, accesos rápidos, selector, acumulación, unidad, venta mixta y solo de servicios, recarga y recuperación ante error, comprobante y PDF. Sin solicitudes externas, errores de JavaScript ni desbordamiento de página. Capturas revisadas; tablas desplazables en móvil. No se probó impresora física.
+- Regresiones: `test:ventas` (7), `test:ventas:navegador` (1), `test:compras` (7), `test:compras:navegador` (1), `test:integracion` de productos/persistencia/reinicio (1) y `test:navegador` de productos, menú y teclado (1). Ejecución secuencial, datos sintéticos solo en `papeleria_promax_prueba` y limpieza exclusivamente de los propios.
+- Migración aditiva `004-servicios.js` aplicada en ambas bases; principal sin pendientes y esquema validado. Huellas idénticas antes/después en categorías, productos, movimientos, ventas, detalles, pagos, proveedores, compras y detalles de compras; `.env` idéntico. Servicios y sus detalles vacíos en la principal, sin operaciones de prueba allí.
+- Arranque normal de `src/servidor.js` con principal en puerto 3001: once rutas HTTP 200 (inicio, productos, inventario, ventas, nueva venta, servicios, nuevo servicio, proveedores, compras, nueva recepción y estilos). Se cerró solo ese proceso propio, sin detener servidores del usuario. Un servidor iniciado antes de la entrega necesita reiniciarse para cargar el código.
+- Sin dependencias nuevas ni cambios al bloqueo. `.env`, CSS compilado, capturas y PDF excluidos de Git.
+
+Commits de código: `b0c73b0` (`feat: registrar servicios y ventas mixtas de forma atómica`) y `0978923` (`feat: integrar catálogo y carrito de servicios con diseño adaptable`). El commit documental y la publicación se confirman al entregar. Pasos manuales en el README; esperar autorización para otra etapa.
+
+### Historial de cierres anteriores
 
 Commits de implementación: `1b3973a` (`feat: preparar conexión local y migraciones de inventario`) y `0251676` (`feat: gestionar productos e inventario con diseño local y pruebas`). El commit documental y el resultado de publicar la rama se informan al cerrar la entrega; pueden consultarse con `git log --oneline`.
 

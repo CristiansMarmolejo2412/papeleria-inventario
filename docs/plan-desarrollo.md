@@ -93,9 +93,13 @@ Criterios: definir unidad base y equivalencias de paquete y caja; comprobar conv
 
 ## Entrega 10: servicios de papelería
 
-Rama sugerida: `feat/servicios`.
+Rama: `feat/servicios`, creada desde `feat/proveedores-compras` en `d79841b`, con ventas, compras y diseño cálido conservados.
 
-Criterios: configurar impresiones, fotocopias y anillados; vender servicios y productos juntos conservando sus importes históricos; comprobar que vender o devolver un servicio no altera existencias físicas.
+Estado: implementada por autorización expresa antes de las demás etapas pendientes. Catálogo con código único, categoría, unidad de cobro, precio positivo y descripción; edición, búsqueda, paginación y estados. Ventas solo de servicios y mixtas, selector y accesos rápidos, cantidades por páginas/caras, comprobante e historial por tipo con datos históricos. Resumen diario incluye servicios; indicadores físicos intactos.
+
+Criterios verificados: precio/actividad y cantidades en servidor, totales exactos, transacción única, servicios sin movimientos, mezclas con stock solo físico, doble envío y clave alterada, última unidad concurrente, reversión, persistencia y datos históricos. Regresiones de ventas, productos y compras y Chrome en escritorio/móvil. Migración aditiva aplicada en prueba y principal, arranque normal y conservación de datos; resultados en `estado.md`.
+
+Pendientes: consumo y costos de papel, tinta e insumos, clientes, autenticación, caja, crédito y descuentos. Las devoluciones no se implementan en esta etapa; no se declara verificado ese flujo. No iniciar otro módulo sin autorización.
 
 ## Entrega 11: inicio y reportes
 
