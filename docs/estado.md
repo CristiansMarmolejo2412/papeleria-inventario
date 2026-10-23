@@ -67,6 +67,15 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 - Arranque del proceso normal en `127.0.0.1:3000`, usando la base de trabajo: inicio, productos, historial y nueva venta respondieron HTTP 200. Las huellas de todos los productos coinciden antes y después; no se registraron ventas en esa base. Se detuvo únicamente el proceso propio de comprobación; no se cerró ningún proceso del usuario.
 - `npm.cmd run test:integracion`: regresión aprobada en la base de pruebas, incluida persistencia tras reiniciar el servidor. No se modificó `.env` ni se borraron productos o registros de uso.
 
+## Cierre de la jornada — 23 de octubre de 2026
+
+- Completados productos e inventario base, ajuste visual cálido, registro e historial de ventas y validación del esquema durante el arranque normal.
+- Arranque posterior con `npm.cmd start` en `papeleria_promax`: cero migraciones pendientes; inicio, productos, inventario, historial, nueva venta y estilos respondieron HTTP 200 en dos recorridos, sin reproducir `SequelizeDatabaseError`.
+- Prueba manual confirmada por el usuario: una venta de **2 cuadernos** redujo las existencias de **20 a 18**. Esta confirmación se registra como prueba del usuario; no se repitió la venta ni se modificaron sus datos al documentarla.
+- Al revisar `feat/ventas` antes del cierre, el árbol estaba limpio y no había commits locales pendientes respecto de la referencia `origin/feat/ventas`. Solo se añade esta actualización documental para guardar y publicar el cierre.
+- Siguiente etapa acordada: **proveedores y compras**, incluida la recepción de mercancía conforme al plan. Permanece pendiente; no se inició código, instalación ni migración de esa etapa.
+- No se incluyen credenciales, `.env`, datos exportados ni respaldos. No se fusiona a `main`.
+
 ## Límites y pendientes
 
 - Pendientes: autenticación, permisos, movimientos operativos completos, caja, descuentos, crédito, pagos combinados, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones. Ventas básicas, consulta del historial e indicadores diarios están implementados; el plan distingue el alcance completo de cada módulo.
@@ -78,6 +87,6 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 
 Commits de implementación: `1b3973a` (`feat: preparar conexión local y migraciones de inventario`) y `0251676` (`feat: gestionar productos e inventario con diseño local y pruebas`). El commit documental y el resultado de publicar la rama se informan al cerrar la entrega; pueden consultarse con `git log --oneline`.
 
-Ventas: commits `5683384` (`feat: registrar ventas atómicas con pagos y control de concurrencia`) y `5713296` (`feat: agregar carrito, historial y comprobantes internos de ventas`). El commit documental y el resultado de publicar `feat/ventas` se informan al cerrar la entrega. El ajuste visual de productos está publicado en `d160b6c`.
+Ventas: commits `5683384` (`feat: registrar ventas atómicas con pagos y control de concurrencia`), `5713296` (`feat: agregar carrito, historial y comprobantes internos de ventas`) y `70e9d29` (`docs: documentar ventas básicas, garantías y verificaciones`). Corrección de arranque: `47f2b99` (`fix: validar el esquema local antes de iniciar el servidor`). Todos estaban publicados en `origin/feat/ventas` al revisar este cierre. El ajuste visual de productos está publicado en `d160b6c`.
 
-Cerrar la entrega de ventas y detenerse. La siguiente propuesta es usuarios y permisos, sujeta a nueva indicación. La instalación, configuración, migraciones, pruebas, demostración y pasos para registrar una venta están en el README.
+Trabajo detenido al cerrar la jornada. La siguiente etapa acordada por el usuario es **proveedores y compras**; comenzar solo tras una nueva indicación. Autenticación, permisos y caja siguen pendientes. La instalación, configuración, migraciones, pruebas, demostración y pasos para registrar una venta están en el README. El hash del commit de cierre y el estado final de publicación se confirman en la entrega y se pueden consultar con `git log -1 --oneline` y `git status --short --branch`.
