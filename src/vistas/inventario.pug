@@ -70,7 +70,11 @@ block contenido
           +icono('documento')
           | Gestionar categorías
           span →
-        p.nota Compras y reportes estarán disponibles en próximas entregas.
+        a.acceso(href='/compras/nueva')
+          +icono('documento')
+          | Registrar recepción
+          span →
+        p.nota Los reportes estarán disponibles en próximas entregas.
   if inicio
     section.tarjeta.proximamente
       .encabezado-panel

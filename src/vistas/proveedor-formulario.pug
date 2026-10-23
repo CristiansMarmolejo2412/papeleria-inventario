@@ -1,0 +1,35 @@
+extends base
+block contenido
+  section.tarjeta.formulario-panel
+    .encabezado-panel
+      div
+        h2= datos.id ? 'Información del proveedor' : 'Agrega un proveedor'
+        p.subtitulo El nombre o razón social es obligatorio. Los demás datos son opcionales.
+      a.enlace(href='/proveedores') Volver a proveedores
+    if Object.keys(errores).length
+      .aviso.error(role='alert') Revisa los campos indicados. Los cambios todavía no se guardaron.
+    form(method='post' action=datos.id ? '/proveedores/'+datos.id : '/proveedores' data-guardar)
+      input(type='hidden' name='_csrf' value=csrf)
+      .formulario-rejilla
+        +campo('nombre','Nombre o razón social *','text',datos.nombre,errores,{maxlength:160,required:true})
+        +campo('identificacion','Identificación','text',datos.identificacion,errores,{maxlength:80})
+        +campo('contacto','Persona de contacto','text',datos.contacto,errores,{maxlength:120})
+        +campo('telefono','Teléfono','tel',datos.telefono,errores,{maxlength:40})
+        +campo('correo','Correo electrónico','email',datos.correo,errores,{maxlength:160})
+        +campo('direccion','Dirección','text',datos.direccion,errores,{maxlength:240})
+        .campo
+          label(for='observaciones') Observaciones
+          textarea#observaciones(name='observaciones' rows='4' maxlength='2000' aria-invalid=errores.observaciones ? 'true' : 'false')= datos.observaciones || ''
+          if errores.observaciones
+            p.error-campo= errores.observaciones
+        .campo
+          label(for='activo') Estado
+          select#activo(name='activo')
+            option(value='1' selected=String(datos.activo) === '1' || datos.activo === true) Activo
+            option(value='0' selected=String(datos.activo) === '0' || datos.activo === false) Inactivo
+          if errores.activo
+            p.error-campo= errores.activo
+      p.nota.mt-5 Desactivar conserva las compras registradas. La identificación no puede repetirse, incluso en proveedores inactivos.
+      .acciones-formulario
+        a.boton.secundario(href='/proveedores') Cancelar
+        button.boton.primario(type='submit')= datos.id ? 'Guardar cambios' : 'Crear proveedor'

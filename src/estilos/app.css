@@ -27,6 +27,7 @@
   input::placeholder { color: #766651; opacity: 1; }
   input[aria-invalid=true],select[aria-invalid=true] { border-color: #ad302f; }
   input:focus,select:focus { border-color: #087f79; }
+  textarea { width:100%; min-width:0; border:1px solid #a28a70; border-radius:8px; background:var(--color-superficie); padding:11px 12px; color:#30291f; font:inherit; resize:vertical; }
 }
 @layer components {
   .icono { width: 23px; height: 23px; flex-shrink: 0; }
@@ -230,6 +231,15 @@
   .numero-comprobante { color:#795c43; font-size:22px; }
   .resumen-pago { max-width:400px; margin:15px 0 0 auto; }
   .nombre-comprobante { white-space:normal; min-width:130px; overflow-wrap:anywhere; }
+  .acciones-proveedor { display:flex; gap:14px; align-items:center; }
+  .compra-controles { display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-top:12px; }
+  .compra-controles label { min-width:0; flex:1; font-size:12px; color:#706253; }
+  .compra-controles input { margin-top:5px; padding:8px; }
+  .compra-controles button { padding:8px 0; }
+  .aviso-recepcion { font-size:12px; line-height:1.7; }
+  .confirmacion-recepcion { display:flex; align-items:flex-start; gap:10px; font-size:13px; line-height:1.6; }
+  .confirmacion-recepcion input { width:18px; height:18px; flex:none; margin-top:2px; accent-color:#087f79; }
+  .texto-observaciones { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.7; margin-top:10px; }
 }
 @media (max-width:1100px) { .venta-rejilla { grid-template-columns:minmax(0,1fr); } }
 @media (max-width:760px) {

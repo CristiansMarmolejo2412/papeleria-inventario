@@ -18,7 +18,7 @@ block contenido
         button.boton.peligro(type='submit') Desactivar producto
   section.tarjeta.mt-5
     h2 Movimientos del producto
-    p.subtitulo Incluye existencias iniciales y salidas por ventas. Las entradas y los ajustes operativos siguen pendientes.
+    p.subtitulo Incluye existencias iniciales, entradas por compras y salidas por ventas. Los ajustes operativos siguen pendientes.
     .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de movimientos; permite desplazamiento horizontal')
       table
         thead
@@ -32,5 +32,11 @@ block contenido
               td= movimiento.tipo
               td= movimiento.cantidad
               td= movimiento.responsable
-              td= movimiento.motivo
+              td
+                if movimiento.compraId
+                  a.enlace(href='/compras/'+movimiento.compraId)= movimiento.motivo
+                else if movimiento.ventaId
+                  a.enlace(href='/ventas/'+movimiento.ventaId)= movimiento.motivo
+                else
+                  = movimiento.motivo
   a.enlace.volver(href='/productos') ← Volver a productos

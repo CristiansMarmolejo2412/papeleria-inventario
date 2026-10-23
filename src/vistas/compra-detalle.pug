@@ -1,0 +1,47 @@
+extends base
+block scripts
+  script(src='/js/compras.js' defer)
+block contenido
+  if confirmada
+    .aviso.no-imprimir(role='status') Recepción confirmada. Las existencias aumentaron y el costo de compra quedó actualizado.
+  .acciones-comprobante.no-imprimir
+    a.enlace(href='/compras') ← Historial de compras
+    a.boton.primario(href='/compras/nueva') Nueva recepción
+  article.tarjeta.comprobante(data-compra-confirmada=compra.operacion)
+    .encabezado-panel
+      div
+        p.eyebrow MERCANCÍA RECIBIDA
+        h2 Recepción de compra
+      strong.numero-comprobante= compra.numero
+    dl.detalles
+      each dato in [['Fecha de recepción',compra.fechaRecepcion],['Registrada en Bogotá',fecha(compra.fechaRegistro)],['Responsable local',compra.responsable],['Proveedor histórico',compra.proveedorNombre],['Identificación histórica',compra.proveedorIdentificacion || 'Sin identificación'],['Contacto histórico',compra.proveedorDatos.contacto || 'Sin contacto'],['Teléfono histórico',compra.proveedorDatos.telefono || 'Sin teléfono'],['Correo histórico',compra.proveedorDatos.correo || 'Sin correo'],['Dirección histórica',compra.proveedorDatos.direccion || 'Sin dirección'],['Referencia',compra.referencia || 'Sin referencia']]
+        div
+          dt= dato[0]
+          dd= dato[1]
+    .tabla-contenedor(tabindex='0' role='region' aria-label='Detalle de la compra; permite desplazamiento horizontal')
+      table
+        thead
+          tr
+            each texto in ['Producto histórico','Código','Cantidad','Costo recibido','Subtotal']
+              th(scope='col')= texto
+        tbody
+          each detalle in compra.detalles
+            tr
+              td.nombre-comprobante
+                a.enlace(href='/productos/'+detalle.productoId)= detalle.nombre
+              td= detalle.codigo
+              td= detalle.cantidad
+              td.importe= dinero(detalle.costo)
+              td.importe= dinero(detalle.subtotal)
+    .resumen-pago
+      .totales-venta
+        div.total-venta
+          span Total
+          strong= dinero(compra.total)
+    if compra.observaciones
+      h3.mt-5 Observaciones de recepción
+      p.texto-observaciones= compra.observaciones
+    if compra.proveedorDatos.observaciones
+      h3.mt-5 Observaciones históricas del proveedor
+      p.texto-observaciones= compra.proveedorDatos.observaciones
+    p.nota.mt-5 Recepción confirmada: no admite edición ni eliminación. El costo vigente corresponde a la última recepción registrada. No genera pagos ni salidas de caja.

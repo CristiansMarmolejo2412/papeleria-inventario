@@ -1,0 +1,79 @@
+extends base
+block scripts
+  script(src='/js/dinero.js' defer)
+  script(src='/js/compras.js' defer)
+block contenido
+  noscript
+    .aviso.error Activa JavaScript en el navegador para preparar una recepción.
+  if Object.keys(errores).length
+    .aviso.error(role='alert')
+      div
+        strong No se obtuvo la confirmación. Revisa los mensajes antes de reintentar.
+        each mensaje in errores
+          p= mensaje
+  .venta-rejilla(data-compra data-lineas=JSON.stringify(lineas) data-revisar=Object.keys(errores).length ? '1' : '0')
+    section.tarjeta.venta-catalogo
+      .encabezado-panel
+        div
+          h2 Productos recibidos
+          p.subtitulo Busca productos activos por nombre o código.
+        a.enlace(href='/compras') Ver historial
+      form.venta-busqueda(data-buscar-compra)
+        .buscador
+          label.sr-only(for='buscar-compra') Buscar productos para recibir
+          +icono('buscar')
+          input#buscar-compra(type='search' name='q' placeholder='Nombre o código del producto…' maxlength='120' autocomplete='off')
+        button.boton.secundario(type='submit') Buscar
+      p.nota(data-estado-busqueda role='status') El costo sugerido es el último registrado. Puedes cambiarlo en el detalle.
+      .catalogo-lista(data-catalogo aria-live='polite')
+      nav.paginacion(aria-label='Páginas de productos')
+        button.boton.secundario(type='button' data-anterior disabled) Anterior
+        span(data-pagina) Página 1
+        button.boton.secundario(type='button' data-siguiente disabled) Siguiente
+    section.tarjeta.venta-carrito
+      h2 Detalle de recepción
+      form#formulario-compra(method='post' action='/compras')
+        input(type='hidden' name='_csrf' value=csrf)
+        input(type='hidden' name='operacion' value=datos.operacion)
+        input(type='hidden' name='carrito' value='[]')
+        .campo.mt-5
+          label(for='proveedorId') Proveedor activo *
+          select#proveedorId(name='proveedorId' required aria-invalid=errores.proveedorId ? 'true' : 'false')
+            option(value='') Seleccionar proveedor
+            each proveedor in proveedores
+              option(value=proveedor.id selected=String(datos.proveedorId)===String(proveedor.id) disabled=!proveedor.activo) #{proveedor.nombre}#{proveedor.activo ? '' : ' (inactivo)'}
+          if errores.proveedorId
+            p.error-campo= errores.proveedorId
+          a.enlace(href='/proveedores/nuevo') Crear proveedor
+        .campo.mt-5
+          label(for='fechaRecepcion') Fecha de recepción *
+          input#fechaRecepcion(type='date' name='fechaRecepcion' value=datos.fechaRecepcion max=hoy min='1000-01-01' required aria-invalid=errores.fechaRecepcion ? 'true' : 'false')
+          if errores.fechaRecepcion
+            p.error-campo= errores.fechaRecepcion
+        .carrito-lista(data-lineas-compra)
+        p.error-campo(data-error-carrito role='status')= errores.carrito || ''
+        .totales-venta
+          div
+            span Subtotal
+            strong(data-subtotal) $ 0
+          div.total-venta
+            span Total
+            strong(data-total) $ 0
+        .campo.mt-5
+          label(for='referencia') Referencia del comprobante del proveedor
+          input#referencia(name='referencia' maxlength='120' value=datos.referencia || '')
+          if errores.referencia
+            p.error-campo= errores.referencia
+        .campo.mt-5
+          label(for='observaciones') Observaciones
+          textarea#observaciones(name='observaciones' rows='3' maxlength='2000')= datos.observaciones || ''
+          if errores.observaciones
+            p.error-campo= errores.observaciones
+        .aviso.aviso-recepcion.mt-5 Registrar esta recepción aumentará las existencias y actualizará el costo de compra. El precio de venta se conserva. No genera pagos ni salidas de caja.
+        label.confirmacion-recepcion
+          input(type='checkbox' required name='confirmacion' value='1')
+          span Confirmo que esta mercancía ya fue recibida.
+        if errores.confirmacion
+          p.error-campo= errores.confirmacion
+        button.boton.primario.confirmar-venta(type='submit') Confirmar recepción
+        p.nota(data-estado-compra role='status') Una recepción confirmada no se puede editar ni borrar.

@@ -1,0 +1,54 @@
+extends base
+block contenido
+  section.tarjeta
+    .encabezado-panel
+      div
+        h2 Recepciones confirmadas
+        p.subtitulo Mercancía recibida · Sin pagos ni movimientos de caja
+      a.boton.primario(href='/compras/nueva') Registrar recepción
+    form.filtros-historial(method='get' action='/compras')
+      .campo
+        label(for='fecha-compra') Fecha de recepción
+        input#fecha-compra(type='date' name='fecha' value=filtros.fecha aria-invalid=errores.fecha ? 'true' : 'false')
+        if errores.fecha
+          p.error-campo= errores.fecha
+      .campo
+        label(for='proveedor-compra') Proveedor
+        select#proveedor-compra(name='proveedor')
+          option(value='') Todos los proveedores
+          each proveedor in proveedores
+            option(value=proveedor.id selected=String(filtros.proveedor)===String(proveedor.id)) #{proveedor.nombre}#{proveedor.activo ? '' : ' (inactivo)'}
+        if errores.proveedor
+          p.error-campo= errores.proveedor
+      button.boton.secundario(type='submit') Filtrar compras
+      a.enlace(href='/compras') Limpiar filtros
+    if compras.length
+      .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de compras; permite desplazamiento horizontal')
+        table
+          thead
+            tr
+              each texto in ['Número','Recepción','Proveedor histórico','Referencia','Total','Detalle']
+                th(scope='col')= texto
+          tbody
+            each compra in compras
+              tr
+                td
+                  a.enlace(href='/compras/'+compra.id)= compra.numero
+                td= compra.fechaRecepcion
+                td.nombre-comprobante= compra.proveedorNombre
+                td= compra.referencia || 'Sin referencia'
+                td.importe= dinero(compra.total)
+                td
+                  a.enlace(href='/compras/'+compra.id) Ver recepción
+      nav.paginacion(aria-label='Paginación de compras')
+        span #{total} #{total===1 ? 'compra' : 'compras'} · Página #{pagina} de #{paginas}
+        .flex.gap-2
+          if pagina>1
+            a.boton.secundario(href=enlace({pagina:pagina-1})) Anterior
+          if pagina<paginas
+            a.boton.secundario(href=enlace({pagina:pagina+1})) Siguiente
+    else
+      .vacio
+        +icono('documento')
+        h3 No hay compras para mostrar
+        p Registra mercancía recibida o cambia los filtros.

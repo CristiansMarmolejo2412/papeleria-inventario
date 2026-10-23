@@ -15,7 +15,7 @@ app.use((req,res,next) => {
   res.locals.fecha = (valor) => new Intl.DateTimeFormat('es-CO',{ dateStyle:'medium', timeStyle:'short', timeZone:'America/Bogota' }).format(new Date(valor));
   res.locals.disponibilidad = (p) => !p.activo ? 'Inactivo' : p.stock === 0 ? 'Agotado' : p.stock <= p.minimo ? 'Pocas existencias' : 'Disponible';
   res.locals.enlace = (cambios) => `?${new URLSearchParams({ ...req.query, ...cambios })}`;
-  res.locals.aviso = { guardado:'Los datos se guardaron correctamente.', desactivado:'Producto desactivado. Su historial se conserva.' }[req.query.mensaje];
+  res.locals.aviso = { guardado:'Los datos se guardaron correctamente.', desactivado:'Producto desactivado. Su historial se conserva.', 'proveedor-desactivado':'Proveedor desactivado. Sus compras históricas se conservan.' }[req.query.mensaje];
   if (req.method === 'POST') {
     const recibido = Buffer.from(String(req.body._csrf || ''));
     if (recibido.length !== Buffer.byteLength(token) || !timingSafeEqual(recibido, Buffer.from(token))) return res.status(403).render('mensaje',{ titulo:'Formulario vencido', mensaje:'Recarga la página y vuelve a intentarlo.' });
