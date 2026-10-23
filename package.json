@@ -1,0 +1,43 @@
+{
+  "name": "papeleria-inventario",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Inventario local para una papelería",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "css": "tailwindcss -i src/estilos/app.css -o public/css/app.css --minify",
+    "css:watch": "tailwindcss -i src/estilos/app.css -o public/css/app.css --watch",
+    "prestart": "npm run css",
+    "start": "node src/servidor.js",
+    "dev": "concurrently -k \"npm:css:watch\" \"node --watch src/servidor.js\"",
+    "db:crear": "node scripts/base-datos.js",
+    "db:migrar": "node scripts/migrar.js",
+    "demo": "node scripts/demo.js",
+    "test": "node --test tests/validacion.test.js",
+    "test:integracion": "node --test tests/integracion.test.js",
+    "test:navegador": "node --test tests/navegador.test.js"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.9",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "mysql2": "^3.24.6",
+    "pug": "^3.0.4",
+    "sequelize": "^6.37.8",
+    "umzug": "^3.8.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@tailwindcss/cli": "4.3.0",
+    "concurrently": "^10.0.6",
+    "supertest": "^7.3.1",
+    "tailwindcss": "4.3.0"
+  },
+  "overrides": {
+    "sequelize": {
+      "uuid": "11.1.1"
+    }
+  }
+}
