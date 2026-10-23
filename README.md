@@ -68,7 +68,13 @@ npm.cmd run db:migrar
 npm.cmd start
 ```
 
-Abre **http://127.0.0.1:3000**. El comando de inicio compila primero los estilos. Detén el servidor con `Ctrl+C`. Para desarrollo con recarga de Node y recompilación de estilos:
+Abre **http://127.0.0.1:3000**. El comando de inicio compila primero los estilos. Detén el servidor con `Ctrl+C`.
+
+Antes de abrir el puerto, el servidor comprueba la conexión, las migraciones y las tablas/columnas de la base seleccionada en `.env`. Si falta una migración o el esquema no corresponde, termina sin anunciarse disponible e indica ejecutar `npm.cmd run db:migrar`. No aplica cambios de esquema automáticamente al iniciar.
+
+Si aparece un error de MySQL durante el uso, la terminal incluye un código de diagnóstico (por ejemplo `ER_NO_SUCH_TABLE` o `ER_BAD_FIELD_ERROR`) sin imprimir consultas, parámetros ni credenciales. Haber migrado `papeleria_promax_prueba` no actualiza `papeleria_promax`. Para actualizar la base de trabajo, detén tu servidor, comprueba que `DB_NAME` seleccione `papeleria_promax`, ejecuta `npm.cmd run db:migrar` y luego `npm.cmd start`. Un servidor iniciado con `npm.cmd start` necesita reiniciarse para cargar cambios de código.
+
+Para desarrollo con recarga de Node y recompilación de estilos:
 
 ```powershell
 npm.cmd run dev

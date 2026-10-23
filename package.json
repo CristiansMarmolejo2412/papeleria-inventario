@@ -15,7 +15,7 @@
     "db:crear": "node scripts/base-datos.js",
     "db:migrar": "node scripts/migrar.js",
     "demo": "node scripts/demo.js",
-    "test": "node --test tests/validacion.test.js",
+    "test": "node --test tests/validacion.test.js tests/arranque.test.js",
     "test:integracion": "node --test tests/integracion.test.js",
     "test:navegador": "node --test tests/navegador.test.js",
     "test:ventas": "node --test tests/ventas.test.js",

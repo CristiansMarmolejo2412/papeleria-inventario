@@ -2,7 +2,10 @@ const path = require('node:path');
 const { Umzug, SequelizeStorage } = require('umzug');
 const { sequelize } = require('../src/modelos');
 function migrador() {
-  return new Umzug({ migrations: { glob: path.join(__dirname, '../migraciones/*.js').replaceAll('\\', '/') },
+  return new Umzug({ migrations: {
+    glob: path.join(__dirname, '../migraciones/*.js').replaceAll('\\', '/'),
+    resolve: ({ name, path: ruta, context }) => ({ name, up: () => require(ruta).up({ context }) }),
+  },
     context: sequelize.getQueryInterface(), storage: new SequelizeStorage({ sequelize }), logger: console });
 }
 if (require.main === module) migrador().up().then(() => console.log('Migraciones aplicadas.')).catch(() => {

@@ -26,7 +26,8 @@ app.use(require('./rutas'));
 app.use((req,res) => res.status(404).render('mensaje',{ titulo:'Página no encontrada', mensaje:'Revisa la dirección o vuelve al inicio.' }));
 app.use((error,req,res,next) => {
   if (res.headersSent) return next(error);
-  console.error(`Error de solicitud: ${error.name || 'Error'}`);
+  const { diagnosticoSeguro } = require('./servicios/arranque');
+  console.error(`Error de solicitud: ${error.name || 'Error'} [${diagnosticoSeguro(error)}]`);
   res.status(error.status || 500).render('mensaje',{ titulo:'No pudimos completar la operación', mensaje: error.status === 404 ? 'Producto no encontrado.' : 'Comprueba la conexión local con MySQL y que las migraciones estén aplicadas. Los datos enviados no se guardaron.' });
 });
 module.exports = app;

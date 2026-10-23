@@ -58,6 +58,15 @@ Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` 
 - Capturas de nueva venta, comprobante e historial revisadas en escritorio y móvil. PDF local generado con medio de impresión y navegación oculta; no se verificó una impresora física. Archivos en `test-results/`, excluidos de Git.
 - Todas las verificaciones de venta usan `papeleria_promax_prueba` y eliminan únicamente sus registros sintéticos. No se instalaron dependencias nuevas ni se modificó `.env`.
 
+## Corrección del arranque normal — 23 de octubre de 2026
+
+- Tras el reporte de `SequelizeDatabaseError`, se inspeccionó expresamente `papeleria_promax`, no solo la base de pruebas: cero migraciones pendientes y consultas de productos, ventas del día e historial correctas. El error original no se pudo reproducir ni recuperar; al inspeccionar el puerto 3000 ya no había un servidor escuchando. No se atribuye una causa confirmada al error anterior.
+- El arranque comprueba conexión, migraciones pendientes y tablas/columnas de todos los modelos con consultas `LIMIT 0` antes de abrir el puerto. Si falta esquema, termina con indicación de ejecutar las migraciones, sin modificarlo automáticamente.
+- Los errores registran el código MySQL seguro, sin consultas, parámetros, mensajes que incluyan datos ni credenciales. El cargador de migraciones CommonJS es explícito, también para diagnósticos ejecutados desde Node sin archivo principal.
+- `npm.cmd run db:migrar`: sin pendientes en la base de trabajo. `npm.cmd test`: siete pruebas aprobadas, incluidas migración pendiente, esquema incompleto y protección del diagnóstico.
+- Arranque del proceso normal en `127.0.0.1:3000`, usando la base de trabajo: inicio, productos, historial y nueva venta respondieron HTTP 200. Las huellas de todos los productos coinciden antes y después; no se registraron ventas en esa base. Se detuvo únicamente el proceso propio de comprobación; no se cerró ningún proceso del usuario.
+- `npm.cmd run test:integracion`: regresión aprobada en la base de pruebas, incluida persistencia tras reiniciar el servidor. No se modificó `.env` ni se borraron productos o registros de uso.
+
 ## Límites y pendientes
 
 - Pendientes: autenticación, permisos, movimientos operativos completos, caja, descuentos, crédito, pagos combinados, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones. Ventas básicas, consulta del historial e indicadores diarios están implementados; el plan distingue el alcance completo de cada módulo.
