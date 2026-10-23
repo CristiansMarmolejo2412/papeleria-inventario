@@ -53,3 +53,13 @@ El servidor agrupa productos repetidos y usa exclusivamente sus datos vigentes p
 La venta, detalles, pago, salidas y stock se guardan juntos. El comprobante `V-<id>` es interno, único y puede tener saltos de numeración. El historial ofrece fecha de Bogotá, número exacto y páginas de 10 ventas; inicio muestra número y total del día con límites locales convertidos a UTC.
 
 Continúan pendientes descuentos, crédito, pagos combinados, clientes, anulaciones, devoluciones, caja y autenticación. El responsable sigue siendo el nombre local configurado. La política de redondeo de futuros descuentos y las reglas de caja se definirán al autorizar esas ampliaciones.
+
+## Alcance implementado de proveedores y compras recibidas
+
+Proveedores: nombre o razón social obligatorio; identificación opcional única normalizada a mayúsculas, contacto, teléfono, correo, dirección y observaciones. Búsqueda, paginación, edición y desactivación, sin borrar proveedores vinculados al historial.
+
+Recepción de varios productos activos de un proveedor activo: cantidades enteras positivas, costo unitario exacto, fecha local de recepción no futura, referencia y observaciones, confirmación expresa del aumento de existencias, número `C-<id>`, historial por fecha/proveedor y detalle sin edición o eliminación. Datos del proveedor y productos se copian históricamente. Se agrupan productos repetidos con el mismo costo; se rechazan costos diferentes para evitar ambigüedad.
+
+La última recepción confirmada fija el costo de compra vigente por orden de registro, incluso si su fecha es pasada, sin promedio ponderado. No se modifica el precio de venta ni los costos históricos previos. Compra, detalles, entradas, stock y costo se guardan juntos con bloqueo del proveedor y de productos por ID ascendente; compatible con ventas simultáneas. La clave única y la huella normalizada impiden duplicación o reutilización con otros datos.
+
+No se generan gastos ni salidas de caja. Órdenes pendientes, recepciones parciales, cuentas por pagar, pagos a proveedores, anulaciones y devoluciones quedan pendientes; responsable local sin autenticación.

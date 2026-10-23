@@ -1,6 +1,6 @@
 # Plan de desarrollo
 
-Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Preparación, entrega 1 y ventas básicas con historial (5A) implementadas. Por solicitud expresa del usuario, 5A se adelantó antes de usuarios, movimientos operativos completos y caja, que siguen pendientes. Ver resultados y límites en `estado.md`.
+Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Preparación, entrega 1, ventas básicas con historial (5A) y proveedores/compras recibidas (8A) implementados. Por solicitud expresa del usuario, 5A y 8A se adelantaron antes de usuarios, movimientos operativos completos y caja, que siguen pendientes. Ver resultados y límites en `estado.md`.
 
 ## Entrega 0: preparación documental
 
@@ -73,9 +73,17 @@ Criterios: crear, editar y desactivar clientes; asociarlos opcionalmente a venta
 
 ## Entrega 8: proveedores y compras
 
-Rama sugerida: `feat/compras-proveedores`.
+### 8A: proveedores y mercancía ya recibida
 
-Criterios: administrar proveedores, registrar compras y recibir mercancía; comprobar recepción con movimientos y costos coherentes en una transacción; rechazar recepción duplicada y conservar el historial de proveedores desactivados.
+Rama: `feat/proveedores-compras`, creada desde `feat/ventas` en `fd66814`, con ventas terminadas y diseño cálido.
+
+Estado: implementada. Proveedores con registro, edición, búsqueda, paginación, identificación opcional única y desactivación sin perder historial. Compra de varios productos activos con fecha de recepción, referencia, observaciones, costos exactos, confirmación del aumento de stock, número único, historial filtrado y detalle inmutable. Actualiza el costo vigente a la última recepción confirmada; conserva precio de venta e históricos. Entradas enlazadas desde el producto, responsable local y ausencia de pagos o salidas de caja.
+
+Criterios verificables: rechazar datos inválidos, proveedores o productos inactivos, cantidades no positivas y desbordamientos; recalcular importes; confirmar compra, detalle, movimientos, stock y costo en una transacción; comprobar duplicados y claves alteradas, compras/ventas simultáneas, reversión completa, persistencia e históricos, regresiones de ventas y revisión de escritorio/móvil. Aplicar migraciones en la principal y verificar el arranque preservando datos antes de cerrar. Resultados reales en `estado.md`.
+
+### 8B: ampliaciones pendientes
+
+Órdenes pendientes, recepciones parciales, cuentas por pagar, pagos a proveedores, anulaciones y devoluciones requieren otra autorización y reglas específicas. La recepción actual no genera automáticamente gastos ni salidas de caja.
 
 ## Entrega 9: presentaciones
 

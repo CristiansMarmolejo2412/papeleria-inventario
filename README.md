@@ -8,6 +8,8 @@ Primera entrega funcional: aplicación local ejecutable, diseño adaptable, cate
 
 Ventas básicas e historial implementados: carrito de varios productos, efectivo con cambio o transferencia manual, comprobante interno imprimible y consulta por fecha o número. Inicio muestra indicadores reales de inventario y el total y número de ventas del día en Bogotá. Caja y las demás secciones futuras continúan pendientes. Usuarios y permisos todavía no están implementados; se conserva el responsable local configurado.
 
+Proveedores y compras recibidas implementados: registro, edición, búsqueda, paginación y desactivación de proveedores; recepción de varios productos con costos exactos, aumento de stock y detalle histórico. Las recepciones son definitivas y no generan pagos ni salidas de caja.
+
 La interfaz usa fondo crema, menú beige madera claro y detalles café y amarillo suave, con acciones principales turquesa y superficies claras para tablas y formularios. El resumen de existencias distingue ausencia de alertas (verde con confirmación), pocas existencias (amarillo) y agotados (rojo suave), con contadores en singular o plural según corresponda.
 
 ## Tecnologías previstas
@@ -116,6 +118,30 @@ El borrador se conserva en `sessionStorage` de la pestaña para soportar recarga
 - Se almacenan fechas UTC y se consultan los días de `America/Bogota` desde las 00:00 inclusive hasta las 00:00 del día siguiente, exclusivas. Los indicadores suman importes decimales directamente en MySQL sin convertirlos a coma flotante.
 - Registrar una venta **no abre ni cierra caja**. El responsable sigue siendo `RESPONSABLE_LOCAL`, sin identidad autenticada. No se implementaron clientes, descuentos, crédito, pagos combinados, anulaciones o devoluciones; quedan para entregas posteriores.
 
+## Proveedores y recepción de compras
+
+Actualización: detén el servidor de este proyecto, conserva `.env`, ejecuta `npm.cmd run db:migrar` en la base principal y vuelve a iniciar con `npm.cmd start`. La migración aditiva `003-proveedores-compras.js` crea proveedores, compras y detalles, y agrega `compraId` opcional a movimientos; conserva los datos existentes. No hay dependencias nuevas ni cambios en `package-lock.json`.
+
+1. Abre **http://127.0.0.1:3000/proveedores** y selecciona **Nuevo proveedor**. Nombre o razón social es obligatorio; identificación, contacto, teléfono, correo, dirección y observaciones son opcionales.
+2. Guarda el proveedor activo. Su identificación se recorta y normaliza a mayúsculas, y debe ser única incluso en inactivos; vacía se guarda como `NULL`. El correo y el teléfono se validan cuando se informan. No se valida fiscalmente la identificación.
+3. En **Compras**, selecciona **Registrar recepción** y elige un proveedor activo. Busca productos activos por nombre o código (también admite código de barras), agrega los recibidos e introduce cantidades enteras positivas y el costo unitario de cada línea.
+4. Indica la fecha real de recepción (no futura), referencia opcional y observaciones. Revisa subtotal y total en COP. Agregar otra vez el mismo producto acumula cantidad; conserva el costo editado. El servidor agrupa líneas repetidas con igual costo y rechaza costos diferentes para un mismo producto.
+5. Marca **Confirmo que esta mercancía ya fue recibida** y pulsa **Confirmar recepción**. El aviso informa que aumentarán las existencias y se actualizará el costo. La confirmación se valida también en el servidor.
+6. Consulta el número interno único `C-<id>` y su detalle. El historial permite fecha de recepción, proveedor (incluidos inactivos) y páginas de 10 compras. En el detalle del producto, cada entrada enlaza a su compra.
+
+### Costos, históricos e integridad
+
+- Cada compra conserva nombre, identificación, contacto y demás datos del proveedor, y nombre, código, cantidad, costo recibido, costo anterior y precio de venta del producto al recibirlo. Desactivar o editar el proveedor o el producto no altera ese historial.
+- **Decisión de esta etapa:** el costo de compra vigente es el de la última recepción confirmada para el producto, según el orden de registro, sin promedio ponderado. Una recepción con fecha pasada también actualiza el costo al confirmarla. Los costos históricos de compras y ventas anteriores permanecen intactos; nuevas ventas usan el costo vigente. El precio de venta no cambia.
+- Compra, detalle, movimiento de entrada, aumento de stock y actualización del costo se confirman o revierten en una sola transacción `READ COMMITTED`. Se bloquea el proveedor durante su copia histórica y los productos por ID ascendente, compatible con los bloqueos de ventas.
+- UUID de operación único y huella de proveedor, fecha, referencia, observaciones y líneas normalizadas: un reintento equivalente devuelve la compra original; la misma clave con cambios se rechaza. Confirmar redirige a GET; recargar el detalle no vuelve a recibir mercancía. Un reintento confirmado sigue funcionando aunque después se desactive el proveedor.
+- Costos unitarios de 0 a 9999999999.99 COP, máximo dos decimales; cantidades enteras positivas y saldo final hasta 2147483647; hasta 100 líneas de entrada. Totales en centavos `BigInt` y `DECIMAL(18,2)`, incluidos costos cero. Todos los importes se recalculan en el servidor.
+- Fecha de recepción como fecha local de Bogotá, y fecha/hora de registro UTC mostrada en Bogotá. El movimiento registra el instante de confirmación; el detalle conserva ambas fechas. Los números internos pueden tener saltos por operaciones revertidas.
+- No existen rutas para editar o eliminar una recepción confirmada. El borrador por pestaña usa una clave distinta del carrito de ventas y se conserva ante recargas o errores hasta consultar la confirmación.
+- No se implementan órdenes pendientes, recepciones parciales, cuentas por pagar, pagos a proveedores, anulaciones ni devoluciones. Registrar la recepción **no genera gasto ni salida de caja**. Responsable local configurable; autenticación pendiente.
+
+Para ensayar sin afectar datos de uso, prepara primero las migraciones de `papeleria_promax_prueba`, selecciona esa base temporalmente con `$env:DB_NAME = 'papeleria_promax_prueba'`, ejecuta `npm.cmd run demo` si deseas productos opcionales y arranca con `npm.cmd start`. Crea un proveedor de prueba y sigue el flujo anterior. Al detenerlo, ejecuta `Remove-Item Env:DB_NAME` antes de volver a la base principal. No hay proveedores ni compras de ejemplo automáticos.
+
 ## Verificaciones y demostración opcional
 
 ```powershell
@@ -124,9 +150,11 @@ npm.cmd run test:integracion
 npm.cmd run test:navegador
 npm.cmd run test:ventas
 npm.cmd run test:ventas:navegador
+npm.cmd run test:compras
+npm.cmd run test:compras:navegador
 ```
 
-Las pruebas de integración, ventas y navegador usan exclusivamente `papeleria_promax_prueba`, con las credenciales de `.env`. Ejecuta los comandos de prueba secuencialmente. Las nuevas pruebas de ventas aplican sus migraciones automáticamente; para la prueba original de navegador, prepara primero el esquema:
+Las pruebas de integración, ventas, compras y navegador usan exclusivamente `papeleria_promax_prueba`, con las credenciales de `.env`. Ejecuta los comandos de prueba secuencialmente. Las pruebas de ventas y compras aplican sus migraciones automáticamente; para la prueba original de navegador, prepara primero el esquema:
 
 ```powershell
 $env:DB_NAME = 'papeleria_promax_prueba'

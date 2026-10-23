@@ -1,6 +1,6 @@
 # Guía de diseño e interacción
 
-Estado: diseño base implementado para inicio, inventario, productos, categorías, ventas, historial, comprobante y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Inicio muestra ventas reales del día y caja permanece pendiente; no se copiaron cifras simuladas de la referencia.
+Estado: diseño base implementado para inicio, inventario, productos, categorías, ventas, historial, comprobante, proveedores, compras recibidas y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Inicio muestra ventas reales del día y caja permanece pendiente; no se copiaron cifras simuladas de la referencia.
 
 ## Dirección visual
 
@@ -39,3 +39,5 @@ La prueba bloquea recursos ajenos al servidor local y verifica que no se solicit
 Para el ajuste cromático se revisaron además las variantes sin alertas, pocas existencias, agotados e inventario vacío con datos visuales temporales, a 1366 y 360 píxeles. Se comprobaron los colores calculados por el navegador y el singular de los contadores. Ocho combinaciones principales de texto y fondo superaron 4,5:1 de contraste, incluidos café sobre madera (4,52:1) y blanco sobre turquesa (4,86:1). Esta comprobación es parcial y no sustituye una auditoría completa de accesibilidad.
 
 Ventas: recorrido de Chrome a 1366 y 360 píxeles con captura de carrito, comprobante e historial; edición y eliminación de líneas, conservación al recargar y tras pago insuficiente, efectivo y transferencia. Se comprobó el medio de impresión con un PDF local, sin prueba en impresora física. Capturas y PDF permanecen en `test-results/`, excluidos de Git.
+
+Proveedores y compras: formularios con errores junto al campo, tablas de proveedores/historial y recepción en dos columnas (productos a la izquierda, datos y costos a la derecha), apiladas en móvil. Aviso permanente del aumento de stock y costo, con confirmación explícita de mercancía recibida y sin acciones de pago o caja. El detalle confirmado es de consulta y conserva datos históricos; cada entrada del producto enlaza a la compra. Recorrido de Chrome y capturas a 1366 y 360 píxeles, con revisión de ausencia de desbordamiento y conservación de la paleta cálida. Los borradores de ventas y compras se mantienen separados por pestaña.

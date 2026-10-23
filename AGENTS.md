@@ -2,7 +2,7 @@
 
 ## Alcance y comunicación
 
-- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. Están implementados productos e inventario base y, por indicación expresa del usuario, ventas básicas e historial antes de usuarios y caja. No iniciar módulos posteriores sin indicación.
+- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. Están implementados productos, inventario base, ventas e historial y proveedores con recepción de compras. Usuarios y caja continúan pendientes. No iniciar módulos posteriores sin indicación.
 - Escribir documentación, interfaz, validaciones, explicaciones y descripciones de commits en español. Usar nombres de código consistentes y sin tildes.
 - No marcar como implementadas o probadas funciones que solo estén planificadas. Actualizar README y `docs/estado.md` al finalizar cada etapa; informar cambios, verificaciones realmente ejecutadas, pendientes y commits.
 
@@ -16,6 +16,8 @@
 - Conservar el stock fuera de los formularios de edición; crear producto y movimiento inicial atómicamente. Importes decimales exactos y cantidades enteras según el README.
 - Ventas básicas: Consumidor final, un pago en efectivo o transferencia manual, sin descuentos, crédito, pagos combinados, anulaciones ni devoluciones. Caja y autenticación siguen pendientes; conservar el responsable local configurado.
 - Calcular dinero con centavos `BigInt` y cadenas decimales; bloquear productos por ID ascendente dentro de la transacción. Conservar la clave de operación al reintentar y rechazar su reutilización con datos diferentes. No generar otra clave automáticamente ante un error de confirmación.
+- Compras: registrar únicamente mercancía ya recibida de proveedores activos, con confirmación explícita. Compra, detalle, entradas, stock y costo vigente son atómicos. Bloquear proveedor y luego productos por ID ascendente; ventas siguen el mismo orden de productos.
+- La última recepción confirmada fija el costo de compra vigente, sin promedio ponderado ni ordenación retroactiva por fecha. No cambiar el precio de venta ni los históricos. Las recepciones confirmadas no se editan ni borran; no generan pagos ni salidas de caja. Órdenes pendientes, recepciones parciales, cuentas por pagar, pagos, anulaciones y devoluciones quedan fuera de esta etapa.
 
 ## Integridad de datos
 
