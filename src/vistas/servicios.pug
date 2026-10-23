@@ -1,0 +1,58 @@
+extends base
+block contenido
+  section.tarjeta
+    .encabezado-panel
+      div
+        h2 Catálogo de servicios
+        p.subtitulo Fotocopias, impresiones, anillados y otras variantes, cada una con su precio.
+      a.boton.primario(href='/servicios/nuevo')
+        +icono('mas')
+        | Nuevo servicio
+    form.filtros-historial(method='get' action='/servicios')
+      .campo
+        label(for='q-servicio') Buscar servicio
+        input#q-servicio(name='q' value=filtros.q placeholder='Nombre, código o categoría' maxlength='120')
+      .campo
+        label(for='estado-servicio') Estado
+        select#estado-servicio(name='estado')
+          option(value='activos' selected=!filtros.estado||filtros.estado==='activos') Activos
+          option(value='inactivos' selected=filtros.estado==='inactivos') Inactivos
+          option(value='todos' selected=filtros.estado==='todos') Todos
+      button.boton.secundario(type='submit') Buscar
+    if servicios.length
+      .tabla-contenedor(tabindex='0' role='region' aria-label='Tabla de servicios; permite desplazamiento horizontal')
+        table
+          thead
+            tr
+              each texto in ['Servicio','Código','Categoría','Unidad de cobro','Precio','Estado','Acciones']
+                th(scope='col')= texto
+          tbody
+            each servicio in servicios
+              tr
+                td.nombre-comprobante= servicio.nombre
+                td= servicio.codigo
+                td= servicio.categoria
+                td= servicio.unidad
+                td.importe= dinero(servicio.precio)
+                td
+                  span.etiqueta(class=servicio.activo ? 'verde' : 'gris')= servicio.activo ? 'Activo' : 'Inactivo'
+                td
+                  .acciones-proveedor
+                    a.enlace(href='/servicios/'+servicio.id+'/editar') Editar
+                    form(method='post' action='/servicios/'+servicio.id+'/estado' data-guardar)
+                      input(type='hidden' name='_csrf' value=csrf)
+                      input(type='hidden' name='activo' value=servicio.activo ? '0' : '1')
+                      button.enlace(type='submit')= servicio.activo ? 'Desactivar' : 'Activar'
+      nav.paginacion(aria-label='Paginación de servicios')
+        span #{total} #{total===1 ? 'servicio' : 'servicios'} · Página #{pagina} de #{paginas}
+        .flex.gap-2
+          if pagina>1
+            a.boton.secundario(href=enlace({pagina:pagina-1})) Anterior
+          if pagina<paginas
+            a.boton.secundario(href=enlace({pagina:pagina+1})) Siguiente
+    else
+      .vacio
+        +icono('documento')
+        h3 No hay servicios para mostrar
+        p Registra tus variantes y precios reales o cambia la búsqueda.
+    p.nota.mt-5 Los servicios no tienen existencias y no descuentan insumos automáticamente.

@@ -24,7 +24,7 @@ block contenido
         table
           thead
             tr
-              each texto in ['Número','Fecha y hora','Cliente','Total','Medio de pago','Detalle']
+              each texto in ['Número','Fecha y hora','Cliente','Contenido','Total','Medio de pago','Detalle']
                 th(scope='col')= texto
           tbody
             each venta in ventas
@@ -33,6 +33,7 @@ block contenido
                   a.enlace(href='/ventas/'+venta.id)= venta.numero
                 td= fecha(venta.fecha)
                 td= venta.cliente
+                td= venta.servicios.length ? (venta.detalles.length ? 'Productos y servicios' : 'Servicios') : 'Productos'
                 td.importe= dinero(venta.total)
                 td= venta.pago.medio === 'efectivo' ? 'Efectivo' : 'Transferencia'
                 td

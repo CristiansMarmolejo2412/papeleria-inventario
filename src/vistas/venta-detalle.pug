@@ -3,7 +3,7 @@ block scripts
   script(src='/js/ventas.js' defer)
 block contenido
   if confirmada
-    .aviso.no-imprimir(role='status') Venta confirmada. Las existencias y el pago se registraron correctamente.
+    .aviso.no-imprimir(role='status')= venta.detalles.length ? 'Venta confirmada. Las existencias y el pago se registraron correctamente.' : 'Venta de servicios confirmada. El pago se registró sin movimientos de inventario.'
   .acciones-comprobante.no-imprimir
     a.enlace(href='/ventas') ← Historial de ventas
     .flex.gap-2
@@ -30,13 +30,15 @@ block contenido
       table
         thead
           tr
-            each texto in ['Producto','Código','Cantidad','Precio unitario','Subtotal']
+            each texto in ['Artículo','Tipo','Código','Unidad','Cantidad','Precio unitario','Subtotal']
               th(scope='col')= texto
         tbody
-          each detalle in venta.detalles
+          each detalle in [...venta.detalles.map(d=>({...d.get({plain:true}),tipo:'Producto',unidad:'unidad'})),...venta.servicios.map(d=>({...d.get({plain:true}),tipo:'Servicio'}))]
             tr
               td.nombre-comprobante= detalle.nombre
+              td= detalle.tipo
               td= detalle.codigo
+              td= detalle.unidad
               td= detalle.cantidad
               td.importe= dinero(detalle.precio)
               td.importe= dinero(detalle.subtotal)

@@ -53,6 +53,18 @@ const PagoVenta = sequelize.define('pagos_venta', {
   medio:{type:DataTypes.STRING(20),allowNull:false},importe:{type:DataTypes.DECIMAL(18,2),allowNull:false},
   recibido:{type:DataTypes.DECIMAL(18,2),allowNull:false},cambio:{type:DataTypes.DECIMAL(18,2),allowNull:false},referencia:{type:DataTypes.STRING(120),allowNull:true},
 });
+const Servicio=sequelize.define('servicios',{
+  id:{type:DataTypes.INTEGER.UNSIGNED,primaryKey:true,autoIncrement:true},codigo:{type:DataTypes.STRING(40),allowNull:false,unique:true},
+  nombre:{type:DataTypes.STRING(120),allowNull:false},categoria:{type:DataTypes.STRING(80),allowNull:false},unidad:{type:DataTypes.STRING(40),allowNull:false},
+  precio:{type:DataTypes.DECIMAL(12,2),allowNull:false},descripcion:{type:DataTypes.TEXT,allowNull:false},activo:{type:DataTypes.BOOLEAN,allowNull:false,defaultValue:true},
+});
+const DetalleServicio=sequelize.define('detalles_servicio',{
+  id:{type:DataTypes.INTEGER.UNSIGNED,primaryKey:true,autoIncrement:true},ventaId:{type:DataTypes.INTEGER.UNSIGNED,allowNull:false},servicioId:{type:DataTypes.INTEGER.UNSIGNED,allowNull:false},
+  codigo:{type:DataTypes.STRING(40),allowNull:false},nombre:{type:DataTypes.STRING(120),allowNull:false},unidad:{type:DataTypes.STRING(40),allowNull:false},
+  precio:{type:DataTypes.DECIMAL(12,2),allowNull:false},cantidad:{type:DataTypes.INTEGER.UNSIGNED,allowNull:false},subtotal:{type:DataTypes.DECIMAL(18,2),allowNull:false},
+});
+Venta.hasMany(DetalleServicio,{foreignKey:'ventaId',as:'servicios'});
+DetalleServicio.belongsTo(Servicio,{foreignKey:'servicioId'});
 Producto.belongsTo(Categoria, { foreignKey: 'categoriaId', as: 'categoria' });
 const Proveedor=sequelize.define('proveedores',{
   id:{type:DataTypes.INTEGER.UNSIGNED,primaryKey:true,autoIncrement:true},nombre:{type:DataTypes.STRING(160),allowNull:false},
@@ -83,4 +95,4 @@ Movimiento.belongsTo(Producto, { foreignKey: 'productoId' });
 Venta.hasMany(DetalleVenta,{foreignKey:'ventaId',as:'detalles'});
 Venta.hasOne(PagoVenta,{foreignKey:'ventaId',as:'pago'});
 Movimiento.belongsTo(Venta,{foreignKey:'ventaId'});
-module.exports = { sequelize, Categoria, Producto, Movimiento, Venta, DetalleVenta, PagoVenta, Proveedor, Compra, DetalleCompra };
+module.exports = { sequelize, Categoria, Producto, Movimiento, Venta, DetalleVenta, PagoVenta, Proveedor, Compra, DetalleCompra, Servicio, DetalleServicio };

@@ -1,0 +1,37 @@
+extends base
+block contenido
+  section.tarjeta.formulario-panel
+    .encabezado-panel
+      div
+        h2= datos.id ? 'Información del servicio' : 'Agrega un servicio de papelería'
+        p.subtitulo Registra cada variante por separado, con el precio que cobra tu negocio.
+      a.enlace(href='/servicios') Volver a servicios
+    if Object.keys(errores).length
+      .aviso.error(role='alert') Revisa los campos indicados. Los cambios no se guardaron.
+    form(method='post' action=datos.id ? '/servicios/'+datos.id : '/servicios' data-guardar)
+      input(type='hidden' name='_csrf' value=csrf)
+      .formulario-rejilla
+        +campo('codigo','Código único *','text',datos.codigo,errores,{maxlength:40,required:true})
+        +campo('nombre','Nombre *','text',datos.nombre,errores,{maxlength:120,required:true})
+        +campo('categoria','Categoría *','text',datos.categoria,errores,{maxlength:80,required:true})
+        +campo('unidad','Unidad de cobro *','text',datos.unidad,errores,{maxlength:40,required:true,list:'unidades-servicio'})
+        datalist#unidades-servicio
+          each unidad in ['página','cara','unidad','trabajo','ejemplar']
+            option(value=unidad)
+        +campo('precio','Precio por unidad de cobro (COP) *','number',datos.precio,errores,{min:'0.01',max:'9999999999.99',step:'0.01',required:true})
+        .campo
+          label(for='activo') Estado
+          select#activo(name='activo')
+            option(value='1' selected=String(datos.activo)==='1'||datos.activo===true) Activo
+            option(value='0' selected=String(datos.activo)==='0'||datos.activo===false) Inactivo
+          if errores.activo
+            p.error-campo= errores.activo
+        .campo
+          label(for='descripcion') Descripción (opcional)
+          textarea#descripcion(name='descripcion' rows='4' maxlength='2000')= datos.descripcion || ''
+          if errores.descripcion
+            p.error-campo= errores.descripcion
+      p.nota.mt-5 Para cobros por página o cara, la cantidad vendida será el número de páginas o caras cobradas. Los servicios no tienen stock; el consumo automático de papel, tinta u otros insumos sigue pendiente.
+      .acciones-formulario
+        a.boton.secundario(href='/servicios') Cancelar
+        button.boton.primario(type='submit')= datos.id ? 'Guardar cambios' : 'Crear servicio'

@@ -1,6 +1,6 @@
 const { createHash } = require('node:crypto');
 const { Op, Transaction } = require('sequelize');
-const { sequelize, Producto, Movimiento, Venta, DetalleVenta, PagoVenta } = require('../modelos');
+const { sequelize, Producto, Movimiento, Venta, DetalleVenta, PagoVenta, Servicio, DetalleServicio } = require('../modelos');
 const { ErrorValidacion } = require('./validacion');
 const dinero = require('../../public/js/dinero');
 const config = require('../configuracion');
@@ -9,15 +9,18 @@ function lineasCarrito(carrito) {
   let lineas;
   try { lineas = typeof carrito === 'string' ? JSON.parse(carrito) : carrito; }
   catch { throw error('carrito','El carrito no es válido. Vuelve a seleccionar los productos.'); }
-  if (!Array.isArray(lineas) || !lineas.length || lineas.length > 100) throw error('carrito','Agrega de 1 a 100 productos a la venta.');
+  if (!Array.isArray(lineas) || !lineas.length || lineas.length > 100) throw error('carrito','Agrega de 1 a 100 productos o servicios a la venta.');
   const agrupadas = new Map();
   for (const linea of lineas) {
-    if (!linea || !/^\d{1,10}$/.test(String(linea.productoId)) || Number(linea.productoId)<1 || Number(linea.productoId)>2147483647 || !/^\d{1,10}$/.test(String(linea.cantidad)) || Number(linea.cantidad)<1 || Number(linea.cantidad)>2147483647) throw error('carrito','Las cantidades deben ser enteras positivas y los productos válidos.');
-    const id = Number(linea.productoId), cantidad = (agrupadas.get(id)||0)+Number(linea.cantidad);
+    const tipo=linea?.tipo||'producto',esServicio=tipo==='servicio',identificador=esServicio?linea?.servicioId:linea?.productoId;
+    if(!['producto','servicio'].includes(tipo)||(esServicio&&linea?.productoId!=null)||(!esServicio&&linea?.servicioId!=null))throw error('carrito','Distingue cada producto o servicio con su tipo e identificador.');
+    if (!linea || !/^\d{1,10}$/.test(String(identificador)) || Number(identificador)<1 || Number(identificador)>2147483647 || !/^\d{1,10}$/.test(String(linea.cantidad)) || Number(linea.cantidad)<1 || Number(linea.cantidad)>2147483647) throw error('carrito','Las cantidades deben ser enteras positivas y los productos o servicios válidos.');
+    const id=Number(identificador),clave=`${esServicio?'s':'p'}:${id}`,cantidad=(agrupadas.get(clave)?.cantidad||0)+Number(linea.cantidad);
     if(cantidad>2147483647) throw error('carrito','La cantidad acumulada supera el máximo permitido.');
-    agrupadas.set(id,cantidad);
+    agrupadas.set(clave,esServicio?{tipo:'servicio',servicioId:id,cantidad}:{productoId:id,cantidad});
   }
-  return [...agrupadas].sort((a,b)=>a[0]-b[0]).map(([productoId,cantidad])=>({productoId,cantidad}));
+  // Conservar la forma canónica anterior de productos mantiene válidas sus claves históricas.
+  return [...agrupadas.values()].sort((a,b)=>Number(a.tipo==='servicio')-Number(b.tipo==='servicio')||((a.productoId||a.servicioId)-(b.productoId||b.servicioId)));
 }
 function validar(entrada) {
   if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(String(entrada.operacion))) throw error('operacion','La clave de operación no es válida. Abre una nueva venta.');
@@ -43,19 +46,24 @@ async function registrar(entrada) {
       const detalles=[];
       for(const linea of datos.lineas) {
         // Orden estable de bloqueos para evitar ciclos entre carritos de varios productos.
-        const producto=await Producto.findByPk(linea.productoId,{transaction,lock:transaction.LOCK.UPDATE});
-        if(!producto || !producto.activo) throw error('carrito',`El producto ${producto?.nombre || '#'+linea.productoId} ya no está disponible para vender.`);
-        if(producto.stock<linea.cantidad) throw error('carrito',`Existencias insuficientes para ${producto.nombre}: quedan ${producto.stock}.`);
-        const subtotal=dinero.centavos(producto.venta)*BigInt(linea.cantidad);
+        const esServicio=linea.tipo==='servicio';
+        const producto=await (esServicio?Servicio:Producto).findByPk(esServicio?linea.servicioId:linea.productoId,{transaction,lock:transaction.LOCK.UPDATE});
+        if(!producto || !producto.activo) throw error('carrito',`El ${esServicio?'servicio':'producto'} ${producto?.nombre || '#'+(linea.servicioId||linea.productoId)} ya no está disponible para vender.`);
+        if(!esServicio&&producto.stock<linea.cantidad) throw error('carrito',`Existencias insuficientes para ${producto.nombre}: quedan ${producto.stock}.`);
+        const subtotal=dinero.centavos(esServicio?producto.precio:producto.venta)*BigInt(linea.cantidad);
         total+=subtotal;
         if(total>dinero.MAXIMO) throw error('carrito','El total supera el máximo permitido. Reduce las cantidades.');
-        detalles.push({producto,linea,subtotal});
+        detalles.push({producto,linea,subtotal,esServicio});
       }
       if(total===0n) throw error('carrito','El total de la venta debe ser mayor que cero.');
       const recibido=datos.medio==='efectivo'?dinero.centavos(datos.recibido):total;
       if(recibido<total) throw error('recibido','El importe recibido es insuficiente para pagar la venta.');
       await venta.update({total:dinero.decimal(total)},{transaction});
-      for(const {producto,linea,subtotal} of detalles) {
+      for(const {producto,linea,subtotal,esServicio} of detalles) {
+        if(esServicio){
+          await DetalleServicio.create({ventaId:venta.id,servicioId:producto.id,codigo:producto.codigo,nombre:producto.nombre,unidad:producto.unidad,precio:producto.precio,cantidad:linea.cantidad,subtotal:dinero.decimal(subtotal)},{transaction});
+          continue;
+        }
         await DetalleVenta.create({ventaId:venta.id,productoId:producto.id,nombre:producto.nombre,codigo:producto.codigo,precio:producto.venta,costo:producto.compra,cantidad:linea.cantidad,subtotal:dinero.decimal(subtotal)},{transaction});
         await producto.update({stock:producto.stock-linea.cantidad},{transaction});
         await Movimiento.create({productoId:producto.id,ventaId:venta.id,tipo:'salida',cantidad:linea.cantidad,motivo:`Venta ${venta.numero}`,responsable:config.responsable,fecha:venta.fecha},{transaction});
@@ -102,9 +110,9 @@ async function historial(filtros) {
   }
   const total=await Venta.count({where}),paginas=Math.max(1,Math.ceil(total/10));
   const pagina=Math.min(paginas,Math.max(1,parseInt(filtros.pagina,10)||1));
-  return {ventas:await Venta.findAll({where,include:[{model:PagoVenta,as:'pago'}],order:[['fecha','DESC'],['id','DESC']],limit:10,offset:(pagina-1)*10}),total,pagina,paginas};
+  return {ventas:await Venta.findAll({where,include:[{model:PagoVenta,as:'pago'},{model:DetalleVenta,as:'detalles',separate:true,attributes:['id']},{model:DetalleServicio,as:'servicios',separate:true,attributes:['id']}],order:[['fecha','DESC'],['id','DESC']],limit:10,offset:(pagina-1)*10}),total,pagina,paginas};
 }
 async function detalle(id) {
-  return Venta.findByPk(id,{include:[{model:DetalleVenta,as:'detalles'},{model:PagoVenta,as:'pago'}],order:[[{model:DetalleVenta,as:'detalles'},'id','ASC']]});
+  return Venta.findByPk(id,{include:[{model:DetalleVenta,as:'detalles'},{model:DetalleServicio,as:'servicios'},{model:PagoVenta,as:'pago'}],order:[[{model:DetalleVenta,as:'detalles'},'id','ASC'],[{model:DetalleServicio,as:'servicios'},'id','ASC']]});
 }
 module.exports={registrar,lineasCarrito,historial,detalle,resumenDia,limitesDia,diaBogota};
