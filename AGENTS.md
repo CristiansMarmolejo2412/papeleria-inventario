@@ -2,7 +2,7 @@
 
 ## Alcance y comunicación
 
-- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. La preparación inicial solo incluye documentación: no instalar dependencias ni implementar la aplicación.
+- Trabajar por etapas según `docs/plan-desarrollo.md`; atender únicamente la etapa autorizada. La preparación documental terminó; la entrega 1 fue autorizada e implementa productos e inventario base. No iniciar módulos posteriores sin indicación.
 - Escribir documentación, interfaz, validaciones, explicaciones y descripciones de commits en español. Usar nombres de código consistentes y sin tildes.
 - No marcar como implementadas o probadas funciones que solo estén planificadas. Actualizar README y `docs/estado.md` al finalizar cada etapa; informar cambios, verificaciones realmente ejecutadas, pendientes y commits.
 
@@ -12,6 +12,8 @@
 - Tecnologías previstas: Node.js, Express, Sequelize, MySQL, Pug y Tailwind CSS. Separar rutas, controladores, servicios, modelos y vistas; concentrar reglas de negocio en servicios.
 - Usar COP y `America/Bogota`. Evitar cálculos monetarios con coma flotante binaria; definir una representación exacta y reglas explícitas de redondeo antes de implementar ventas.
 - Seguir los módulos y reglas de `docs/requisitos.md` y la guía de `docs/diseno.md`.
+- Usar `npm.cmd` en PowerShell. Aplicar migraciones con Umzug; no usar sincronizaciones destructivas. Limitar bases a `papeleria_promax` y `papeleria_promax_prueba`; mantener datos sintéticos y demostración únicamente en la segunda.
+- Conservar el stock fuera de los formularios de edición; crear producto y movimiento inicial atómicamente. Importes decimales exactos y cantidades enteras según el README.
 
 ## Integridad de datos
 

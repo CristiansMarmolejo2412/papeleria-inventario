@@ -40,4 +40,6 @@ Idioma de documentación, interfaz y validaciones: español. Nombres de código 
 
 ## Decisiones pendientes
 
-Antes de la entrega correspondiente se concretarán: versiones compatibles, política de códigos únicos, cantidades fraccionarias, precisión y redondeo, métodos de pago y descuentos, permisos por operación, tratamiento de devoluciones, equivalencias y política de respaldo. No son funciones terminadas ni bloquean la preparación documental.
+En la entrega 1 se decidió usar MySQL 8.0.16 o posterior, códigos únicos incluso en inactivos, cantidades enteras e importes `DECIMAL(12,2)` recibidos como cadenas con máximo dos decimales, sin redondeo implícito. Los códigos internos se normalizan a mayúsculas y los códigos de barras vacíos se almacenan como `NULL`. Las fechas se almacenan en UTC y se muestran en Bogotá. El stock solo se establece durante el alta, junto con el movimiento inicial, y no se edita directamente.
+
+Antes de las entregas correspondientes se concretarán: redondeo de descuentos y ventas, métodos de pago, permisos por operación, tratamiento de devoluciones, equivalencias y política de respaldo. La identidad del responsable inicial es un nombre configurado localmente; la autenticación y sus permisos pertenecen a la entrega 2.

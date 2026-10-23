@@ -1,24 +1,42 @@
 # Estado del proyecto
 
-Fecha de referencia: 22 de octubre de 2026 (`America/Bogota`).
+Fecha de referencia de la entrega: 23 de octubre de 2026 (`America/Bogota`). Preparación documental: 22 de octubre de 2026.
 
 ## Avances
 
-- Repositorio inspeccionado: `papeleria-inventario`, rama inicial `main`, árbol de trabajo limpio y un único README con el nombre del proyecto.
-- Remoto `origin`: `https://github.com/CristiansMarmolejo2412/papeleria-inventario.git`. Commit inicial: `45c3e25`.
-- Creada la rama `chore/documentacion-inicial`, sin modificar `main`.
-- Documentados propósito y estado real, instrucciones permanentes, módulos, reglas de negocio, guía visual y entregas con criterios verificables.
+- Preparación documental terminada y publicada en `chore/documentacion-inicial`, commit `0c53b0c`.
+- Entrega 1 implementada en `feat/productos-inventario-base`, creada desde la rama de documentación, con árbol inicialmente limpio. `main` no se modifica ni se fusiona automáticamente.
+- Aplicación Express/Pug ejecutable, Tailwind compilado y recursos locales. Menú plegable, tarjetas, mensajes, navegación y adaptación visual basada en la referencia del usuario.
+- Categorías con alta, consulta, edición y desactivación. Productos con códigos únicos, categoría, marca, ubicación, costos, precios, mínimos, estado y existencias iniciales.
+- Consulta de productos con búsqueda por nombre y códigos, filtros por categoría, disponibilidad y actividad, y páginas de 10 registros. Inicio con indicadores reales del inventario; ventas y caja pendientes sin cifras ficticias.
+- Creación atómica de producto y movimiento inicial con fecha, motivo y responsable local. Edición sin modificación directa de stock, importes exactos y validación junto a los campos.
+- Configuración por `.env` excluido de Git; ejemplo sin secretos. Bases limitadas a `papeleria_promax` y `papeleria_promax_prueba`, migraciones con Umzug y sin sincronización destructiva.
 
-## Verificaciones de esta preparación
+## Entorno y verificaciones ejecutadas
 
-Se inspeccionaron archivos existentes, estado de Git, ramas, remoto e historial. Se revisaron la cobertura de los módulos y reglas solicitados, la coherencia del plan y la separación entre funciones previstas y realizadas. Se verificó que los seis documentos contienen texto y que sus enlaces relativos existen; `git diff --check` no encontró errores de espacios en los cambios del README. Se comprobará también el conjunto preparado para el commit. El resultado del commit y de la publicación se informará al cerrar la preparación.
+Windows, Node.js 26.3.1, npm 11.16.0 y servicio MySQL 8.0.46. Se usó `npm.cmd` por la restricción de scripts PowerShell. Las credenciales se configuraron localmente y no se incluyen en documentación o commits.
 
-No hay aplicación ejecutable ni módulos implementados. No se instalaron dependencias ni se ejecutaron pruebas funcionales, de MySQL o de interfaz.
+- Instalación de dependencias y archivo de bloqueo; compilación de estilos con `npm.cmd run css`.
+- Arranque con `npm.cmd run dev`: servidor local y vigilancia de estilos operativos; comprobación HTTP del inicio en el puerto 3000.
+- `npm.cmd test`: cuatro pruebas aprobadas de validación, precisión decimal, protección del stock y compilación de todas las plantillas Pug.
+- `npm.cmd run db:crear` y `npm.cmd run db:migrar`: preparación de la base exclusiva de trabajo y aplicación de esquema. Repetir las migraciones no recreó tablas.
+- `npm.cmd run test:integracion`: recorrido aprobado con MySQL real en la base exclusiva de prueba. Incluye creación, edición, búsqueda por códigos y nombre, filtros, paginación, desactivación, duplicados internos y de barras, negativos y categorías inactivas. Comprueba el movimiento inicial y su conservación al desactivar.
+- La prueba provoca un fallo antes de guardar el movimiento y comprueba que tampoco se conserva el producto. También rechaza solicitudes sin token de formulario y cambios de stock enviados manualmente.
+- Persistencia comprobada desde una conexión en otro proceso y arrancando, deteniendo y volviendo a arrancar el servidor, con consulta HTTP del producto después de ambos arranques.
+- `npm.cmd run test:navegador`: recorrido aprobado con Google Chrome y Playwright. Revisa 1366, 768 y 360 píxeles, menú plegable, Escape, foco de teclado, búsqueda automática y alta, edición y desactivación desde formularios. Capturas locales en `test-results/`, excluidas de Git; revisión visual de escritorio y móvil.
+- Navegador sin solicitudes a recursos externos y sin errores de JavaScript o carga. Las capturas usan movimiento reducido para evitar medir transiciones intermedias al cambiar el tamaño.
+- Demostración opcional ejecutada solo en `papeleria_promax_prueba`. Las pruebas eliminan únicamente sus registros sintéticos; no vacían bases ni tablas ni cargan demostración en la base de trabajo.
+- Se corrigieron las alertas de dependencias: Tailwind/CLI 4.3.0, dependencias transitivas actualizadas y `uuid` de Sequelize fijado a 11.1.1 compatible con CommonJS. La auditoría posterior informó cero vulnerabilidades. Se conserva `package-lock.json`.
 
-## Pendientes
+## Límites y pendientes
 
-Todas las entregas funcionales (1 a 13) permanecen pendientes. También están pendientes las decisiones técnicas detalladas en `requisitos.md`, que se resolverán al abordar la entrega correspondiente.
+- Entregas 2 a 13 pendientes: autenticación, permisos, movimientos operativos, caja, ventas, anulaciones, devoluciones, clientes, compras, presentaciones, servicios, reportes y respaldos/restauración. Las páginas futuras no guardan operaciones.
+- El responsable local es un nombre de configuración; no existe aún autenticación ni una identidad de usuario verificable. El servidor escucha en `127.0.0.1` por defecto.
+- Se verificó ausencia de dependencias externas durante las solicitudes, sin desconectar físicamente Windows de internet. No se realizó auditoría integral con lector de pantalla ni medición automatizada de todos los contrastes. Otras versiones de Node y otros navegadores permanecen sin verificar.
+- Node 26 emite una advertencia de obsolescencia durante la compilación de Tailwind; el comando termina correctamente. La herramienta de paquetes también informa un script nativo opcional de vigilancia sin aprobar; la compilación y el recorrido verificados funcionan con el binario disponible. No se modificó la política de scripts del sistema.
 
-## Siguiente tarea
+## Git y siguiente tarea
 
-Tras cerrar esta preparación, detener el trabajo. La siguiente etapa propuesta, sujeta a una nueva indicación, es la entrega 1: estructura ejecutable, diseño base y productos con persistencia, búsqueda y consulta de existencias. No iniciar instalaciones ni implementación durante la preparación documental.
+Commits de implementación: `1b3973a` (`feat: preparar conexión local y migraciones de inventario`) y `0251676` (`feat: gestionar productos e inventario con diseño local y pruebas`). El commit documental y el resultado de publicar la rama se informan al cerrar la entrega; pueden consultarse con `git log --oneline`.
+
+Cerrar esta entrega y detenerse. La siguiente propuesta es la entrega 2 (usuarios y permisos), sujeta a nueva indicación. La instalación, configuración, migraciones, pruebas, demostración y pasos para abrir la aplicación están en el README.

@@ -1,16 +1,20 @@
 # Plan de desarrollo
 
-Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Todos los módulos funcionales están pendientes.
+Cada entrega requiere autorización de su alcance, rama propia, cambios coherentes, verificaciones ejecutadas, documentación de resultados y publicación en `origin` si hay acceso. No se fusionará a `main` automáticamente. Preparación terminada y entrega 1 implementada; entregas 2 a 13 pendientes. Ver resultados y límites en `estado.md`.
 
 ## Entrega 0: preparación documental
 
 Rama: `chore/documentacion-inicial`.
 
+Estado: completada y publicada, commit `0c53b0c`.
+
 Criterios: revisar repositorio y documentación existente; conservar alcance e instrucciones; crear los seis documentos solicitados; comprobar coherencia y enlaces; crear el commit `docs: definir alcance, diseño y plan de desarrollo`; intentar publicar la rama e informar el resultado. No instalar dependencias ni implementar la aplicación. Detenerse al terminar.
 
 ## Entrega 1: primera versión funcional de productos
 
-Rama sugerida: `feat/productos-iniciales`.
+Rama: `feat/productos-inventario-base`, creada desde `chore/documentacion-inicial` para conservar los documentos.
+
+Estado: implementada. Incluye categorías, consultas de inventario, validación, migraciones, diseño local y pruebas automatizadas. Verificaciones de MySQL y navegador registradas en `estado.md`; publicación de la rama se informa al cerrar la entrega.
 
 Alcance: estructura ejecutable Node.js/Express, Sequelize/MySQL, vistas Pug y Tailwind local; diseño base y menú plegable; alta, edición, desactivación y consulta de productos con persistencia, búsqueda por nombre o código, filtros, paginación y existencias. El saldo inicial se registrará con trazabilidad; los movimientos operativos completos llegan en la entrega 3.
 

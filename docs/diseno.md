@@ -1,6 +1,6 @@
 # Guía de diseño e interacción
 
-Estado: guía prevista, sin pantallas implementadas.
+Estado: diseño base implementado para inicio, inventario, productos, categorías y páginas de módulos pendientes. La referencia visual proporcionada se adaptó con fondo cálido, turquesa, tarjetas, menú plegable y estados textuales. Ventas y caja muestran su estado pendiente; no se copiaron cifras simuladas de la referencia.
 
 ## Dirección visual
 
@@ -27,4 +27,6 @@ Tarjetas con bordes redondeados, sombras discretas y espacio generoso. Tipograf�
 
 ## Verificación cuando existan pantallas
 
-Revisar a 360, 768 y 1366 píxeles de ancho; recorrer acciones con teclado; comprobar foco, contraste, estados vacíos, errores y carga. Verificar los recursos con internet desconectado, manteniendo disponibles servidor y MySQL locales. Estas comprobaciones aún no se han ejecutado.
+Se ejecutó una prueba con Chrome a 360, 768 y 1366 píxeles: capturas, ausencia de desbordamiento horizontal de página, menú, teclado, búsqueda y operaciones de productos. Las tablas conservan desplazamiento horizontal con región enfocable por teclado. Se revisaron visualmente capturas de escritorio y móvil.
+
+La prueba bloquea recursos ajenos al servidor local y verifica que no se soliciten. Esto comprueba la independencia de recursos externos; no equivale a desconectar físicamente Windows de internet. Se probó preferencia de movimiento reducido para capturas estables. No se realizó auditoría completa con lector de pantalla ni medición automatizada de contraste de todas las combinaciones.
